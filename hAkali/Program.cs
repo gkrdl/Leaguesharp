@@ -289,8 +289,6 @@ namespace hAkali
 
                         if (E.IsReady(0) && Geometry.Distance(player, qTarget) <= 320f && useEFlag)
                             E.CastOnUnit(qTarget, true);
-                        else if (R.IsReady(0) && Geometry.Distance(player, qTarget) <= 800f && useRFlag)
-                            R.CastOnUnit(qTarget, true);
 
                         if (qTarget.Health <= qTarget.MaxHealth / 2)
                         {
