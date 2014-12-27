@@ -80,16 +80,12 @@ namespace hAkali
             configMenu.SubMenu("Combo").AddItem(new MenuItem("Use E", "Use E").SetValue(true));
             configMenu.SubMenu("Combo").AddItem(new MenuItem("Use R", "Use R").SetValue(true));
             configMenu.SubMenu("Combo").AddItem(new MenuItem("Only Use R", "use R, when Q is available").SetValue(true));
-            configMenu.SubMenu("Combo").AddItem(new MenuItem("Ignite", "Use Ignite").SetValue(true));
             configMenu.SubMenu("Combo").AddItem(new MenuItem("Cutlass", "Use Cutlass").SetValue(true));
             configMenu.SubMenu("Combo").AddItem(new MenuItem("Gunblade", "Use Gunblade").SetValue(true));
 
             configMenu.AddSubMenu(new Menu("Harass", "Harass"));
             configMenu.SubMenu("Harass").AddItem(new MenuItem("Use Q", "Use Q").SetValue(true));
             configMenu.SubMenu("Harass").AddItem(new MenuItem("Use E", "Use E").SetValue(true));
-
-            configMenu.AddSubMenu(new Menu("Misc", "Misc"));
-            configMenu.SubMenu("Misc").AddItem(new MenuItem("PacketCast", "PacketCast").SetValue(true));
 
             configMenu.AddSubMenu(new Menu("Drawing", "Drawing"));
             configMenu.SubMenu("Drawing").AddItem(new MenuItem("Q Range", "Q Range").SetValue(new Circle(true, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
