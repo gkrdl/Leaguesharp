@@ -124,7 +124,11 @@ namespace hAkali
         private static void wTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (remainingTime > 0)
+            {
                 remainingTime--;
+                if (remainingTime < 8)
+                    Drawing.DrawText(player.Position.X, player.Position.Y, System.Drawing.Color.GreenYellow, remainingTime.ToString());
+            }
             else
             {
                 remainingTime = 8;
@@ -148,7 +152,7 @@ namespace hAkali
             if (drawingR.Active) Utility.DrawCircle(player.Position, R.Range, drawingR.Color);
 
             if (remainingTime < 8)
-                Drawing.DrawText(Drawing.Width * 0.44f, Drawing.Height * 0.7f, System.Drawing.Color.GreenYellow, remainingTime.ToString());
+                Drawing.DrawText(player.Position.X, player.Position.Y, System.Drawing.Color.GreenYellow, remainingTime.ToString());
             
             
         }
