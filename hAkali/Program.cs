@@ -64,7 +64,7 @@ namespace hAkali
             configMenu = new Menu("hAkali", "hAkali", true);
             
             configMenu.AddSubMenu(new Menu("Target Selector", "Target Selector"));
-            SimpleTs.AddToMenu(configMenu.SubMenu("Target Selector"));
+            TargetSelector.AddToMenu(configMenu.SubMenu("Target Selector"));
 
             configMenu.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
             Orbwalker = new Orbwalking.Orbwalker(configMenu.SubMenu("Orbwalker"));
@@ -164,8 +164,8 @@ namespace hAkali
         #region Method
         private static void Combo()
         {
-            Obj_AI_Hero qTarget = SimpleTs.GetTarget(Q.Range, 0);
-            Obj_AI_Hero rTarget = SimpleTs.GetTarget(R.Range, 0);
+            Obj_AI_Hero qTarget = TargetSelector.GetTarget(Q.Range, 0);
+            Obj_AI_Hero rTarget = TargetSelector.GetTarget(R.Range, 0);
 
 
             Orbwalker.SetAttack(true);
@@ -350,7 +350,7 @@ namespace hAkali
 
         private static void Harass()
         {
-            var target = SimpleTs.GetTarget(Q.Range, 0);
+            var target = TargetSelector.GetTarget(Q.Range, 0);
             bool useQFlag = configMenu.SubMenu("Harass").Item("Use Q").GetValue<bool>();
             bool useEFlag = configMenu.SubMenu("Harass").Item("Use E").GetValue<bool>();
 
