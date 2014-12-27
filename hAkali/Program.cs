@@ -221,9 +221,12 @@ namespace hAkali
 
                         if (useWFlag && W.IsReady(0))
                         {
-                            W.Cast(player.Position);
-                            remainingTime = 8;
-                            wTimer.Start();
+                            if (Geometry.Distance(player, qTarget) <= 320f && useEFlag)
+                            {
+                                W.Cast(player.Position);
+                                remainingTime = 8;
+                                wTimer.Start();
+                            }
                         }
                     }
                 }
@@ -258,9 +261,12 @@ namespace hAkali
 
                         if (useWFlag && W.IsReady(0))
                         {
-                            W.Cast(player.Position);
-                            remainingTime = 8;
-                            wTimer.Start();
+                            if (Geometry.Distance(player, qTarget) <= 320f && useEFlag)
+                            {
+                                W.Cast(player.Position);
+                                remainingTime = 8;
+                                wTimer.Start();
+                            }
                         }
                     }
                 }
@@ -301,9 +307,12 @@ namespace hAkali
 
                         if (useWFlag && W.IsReady(0))
                         { 
-                            W.Cast(player.Position);
-                            remainingTime = 8;
-                            wTimer.Start();
+                            if (Geometry.Distance(player, qTarget) <= 320f && useEFlag)
+                            {
+                                W.Cast(player.Position);
+                                remainingTime = 8;
+                                wTimer.Start();
+                            }
                         }
                             
                     }
@@ -342,9 +351,12 @@ namespace hAkali
 
                         if (useWFlag && W.IsReady(0))
                         {
-                            W.Cast(player.Position);
-                            remainingTime = 8;
-                            wTimer.Start();
+                            if (Geometry.Distance(player, qTarget) <= 320f && useEFlag)
+                            {
+                                W.Cast(player.Position);
+                                remainingTime = 8;
+                                wTimer.Start();
+                            }
                         }
                     }
                 }
