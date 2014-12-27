@@ -191,23 +191,23 @@ namespace hAkali
                     {
                         if (Q.IsReady(0) && useQFlag)
                         {
-                            Q.CastOnUnit(qTarget, true);
+                            player.Spellbook.CastSpell(Q.Slot, qTarget);
                         }
                         else if (R.IsReady(0) && Geometry.Distance(player, qTarget) <= 800f && useRFlag)
                         {
-                            R.CastOnUnit(qTarget, true);
+                            player.Spellbook.CastSpell(R.Slot, qTarget);
 
                             if (Q.IsReady(0) && useQFlag)
-                                Q.CastOnUnit(qTarget, true);
+                                player.Spellbook.CastSpell(Q.Slot, qTarget);
 
 
 
                         }
 
                         if (E.IsReady(0) && Geometry.Distance(player, qTarget) <= 320f && useEFlag)
-                            E.CastOnUnit(qTarget, true);
+                            player.Spellbook.CastSpell(E.Slot, eTarget);
                         else if (R.IsReady(0) && Geometry.Distance(player, qTarget) <= 800f && useRFlag)
-                            R.CastOnUnit(qTarget, true);
+                            player.Spellbook.CastSpell(R.Slot, qTarget);
 
                         if (qTarget.Health <= qTarget.MaxHealth / 2)
                         {
@@ -229,7 +229,7 @@ namespace hAkali
                         {
                             if (Geometry.Distance(player, qTarget) <= 320f && useEFlag)
                             {
-                                W.Cast(player.Position);
+                                player.Spellbook.CastSpell(W.Slot, player.Position);
                                 remainingTime = 8;
                                 wTimer.Start();
                             }
@@ -242,19 +242,20 @@ namespace hAkali
                     {
                         if (R.IsReady(0) && Geometry.Distance(player, rTarget) <= 800f && useRFlag)
                         {
-                            R.CastOnUnit(rTarget, true);
+                            player.Spellbook.CastSpell(R.Slot, rTarget);
+                            
 
                             if (Q.IsReady(0) && useQFlag)
-                                Q.CastOnUnit(rTarget, true);
+                                player.Spellbook.CastSpell(Q.Slot, rTarget);
 
 
                             
                         }
 
                         if (E.IsReady(0) && Geometry.Distance(player, rTarget) <= 320 && useEFlag)
-                            E.CastOnUnit(rTarget, true);
+                            player.Spellbook.CastSpell(E.Slot, rTarget);
                         else if (R.IsReady(0) && Geometry.Distance(player, rTarget) <= 800f && useRFlag)
-                            R.CastOnUnit(rTarget, true);
+                            player.Spellbook.CastSpell(R.Slot, rTarget);
 
                         if (rTarget.Health <= rTarget.MaxHealth / 2)
                         {
@@ -275,7 +276,7 @@ namespace hAkali
                         {
                             if (Geometry.Distance(player, qTarget) <= 320f && useEFlag)
                             {
-                                W.Cast(player.Position);
+                                player.Spellbook.CastSpell(W.Slot, player.Position);
                                 remainingTime = 8;
                                 wTimer.Start();
                             }
@@ -294,19 +295,19 @@ namespace hAkali
                     {
                         if (Q.IsReady(0) && useQFlag)
                         {
-                            Q.CastOnUnit(qTarget, true);
+                            player.Spellbook.CastSpell(Q.Slot, qTarget);
 
                             if (R.IsReady(0) && useRFlag)
-                                R.CastOnUnit(qTarget, true);
+                                player.Spellbook.CastSpell(R.Slot, qTarget);
 
                             if (Q.IsReady(0) && useQFlag)
-                                Q.CastOnUnit(qTarget, true);
+                                player.Spellbook.CastSpell(Q.Slot, qTarget);
 
 
                         }
 
                         if (E.IsReady(0) && Geometry.Distance(player, qTarget) <= 320f && useEFlag)
-                            E.CastOnUnit(qTarget, true);
+                            player.Spellbook.CastSpell(E.Slot, qTarget);
 
                         if (qTarget.Health <= qTarget.MaxHealth / 2)
                         {
@@ -327,7 +328,7 @@ namespace hAkali
                         { 
                             if (Geometry.Distance(player, qTarget) <= 320f && useEFlag)
                             {
-                                W.Cast(player.Position);
+                                player.Spellbook.CastSpell(W.Slot, player.Position);
                                 remainingTime = 8;
                                 wTimer.Start();
                             }
@@ -345,17 +346,18 @@ namespace hAkali
 
                             if (Q.IsReady(0))
                             {
-                                R.CastOnUnit(rTarget, true);
+                                player.Spellbook.CastSpell(R.Slot, rTarget);
+                                
 
                                 if (useQFlag)
-                                    Q.CastOnUnit(rTarget, true);
+                                    player.Spellbook.CastSpell(Q.Slot, rTarget);
 
                             }
                         }
 
                         
                         if (E.IsReady(0) && Geometry.Distance(player, rTarget) <= 320 && useEFlag)
-                            E.CastOnUnit(rTarget, true);
+                            player.Spellbook.CastSpell(E.Slot, rTarget);
 
 
                         if (rTarget.Health <= rTarget.MaxHealth / 2)
@@ -377,7 +379,7 @@ namespace hAkali
                         {
                             if (Geometry.Distance(player, qTarget) <= 320f && useEFlag)
                             {
-                                W.Cast(player.Position);
+                                player.Spellbook.CastSpell(W.Slot, player.Position);
                                 remainingTime = 8;
                                 wTimer.Start();
                             }
@@ -394,9 +396,9 @@ namespace hAkali
             bool useEFlag = configMenu.SubMenu("Harass").Item("Use E").GetValue<bool>();
 
             if (target != null && useQFlag)
-                Q.CastOnUnit(target);
+                player.Spellbook.CastSpell(Q.Slot, target);
             if (target != null && useEFlag && Geometry.Distance(player, target) <= 320f && E.IsReady())
-                E.CastOnUnit(target);
+                player.Spellbook.CastSpell(E.Slot, target);
         }
         
         private static InventorySlot GetItemSlot(int itemID)
