@@ -211,10 +211,16 @@ namespace hAkali
 
                         if (qTarget.Health <= qTarget.MaxHealth / 2)
                         {
-                            if (cutlassFlag && cutlass.IsReady())
-                                cutlass.Cast(qTarget);
-                            if (gunbladeFlag && gunblade.IsReady())
-                                gunblade.Cast(qTarget);
+                            if (cutlassFlag && Items.CanUseItem(cutlass.Id))
+                            {
+                                InventorySlot item = GetItemSlot(cutlass.Id);
+                                player.Spellbook.CastSpell(item.SpellSlot, qTarget);
+                            }
+                            if (gunbladeFlag && Items.CanUseItem(gunblade.Id))
+                            {
+                                InventorySlot item = GetItemSlot(gunblade.Id);
+                                player.Spellbook.CastSpell(item.SpellSlot, qTarget);
+                            }
 
                         }
 
@@ -252,10 +258,16 @@ namespace hAkali
 
                         if (rTarget.Health <= rTarget.MaxHealth / 2)
                         {
-                            if (cutlassFlag && cutlass.IsReady())
-                                cutlass.Cast(rTarget);
-                            if (gunbladeFlag && gunblade.IsReady())
-                                gunblade.Cast(rTarget);
+                            if (cutlassFlag && Items.CanUseItem(cutlass.Id))
+                            {
+                                InventorySlot item = GetItemSlot(cutlass.Id);
+                                player.Spellbook.CastSpell(item.SpellSlot, rTarget);
+                            }
+                            if (gunbladeFlag && Items.CanUseItem(gunblade.Id))
+                            {
+                                InventorySlot item = GetItemSlot(gunblade.Id);
+                                player.Spellbook.CastSpell(item.SpellSlot, rTarget);
+                            }
 
                         }
 
@@ -298,10 +310,16 @@ namespace hAkali
 
                         if (qTarget.Health <= qTarget.MaxHealth / 2)
                         {
-                            if (cutlassFlag && cutlass.IsReady())
-                                cutlass.Cast(qTarget);
-                            if (gunbladeFlag && gunblade.IsReady())
-                                gunblade.Cast(qTarget);
+                            if (cutlassFlag && Items.CanUseItem(cutlass.Id))
+                            {
+                                InventorySlot item = GetItemSlot(cutlass.Id);
+                                player.Spellbook.CastSpell(item.SpellSlot, qTarget);
+                            }
+                            if (gunbladeFlag && Items.CanUseItem(gunblade.Id))
+                            {
+                                InventorySlot item = GetItemSlot(gunblade.Id);
+                                player.Spellbook.CastSpell(item.SpellSlot, qTarget);
+                            }
 
                         }
 
@@ -342,10 +360,16 @@ namespace hAkali
 
                         if (rTarget.Health <= rTarget.MaxHealth / 2)
                         {
-                            if (cutlassFlag && cutlass.IsReady())
-                                cutlass.Cast(rTarget);
-                            if (gunbladeFlag && gunblade.IsReady())
-                                gunblade.Cast(rTarget);
+                            if (cutlassFlag && Items.CanUseItem(cutlass.Id))
+                            {
+                                InventorySlot item = GetItemSlot(cutlass.Id);
+                                player.Spellbook.CastSpell(item.SpellSlot, rTarget);
+                            }
+                            if (gunbladeFlag && Items.CanUseItem(gunblade.Id))
+                            {
+                                InventorySlot item = GetItemSlot(gunblade.Id);
+                                player.Spellbook.CastSpell(item.SpellSlot, rTarget);
+                            }
 
                         }   
 
@@ -373,6 +397,13 @@ namespace hAkali
                 Q.CastOnUnit(target);
             if (target != null && useEFlag && Geometry.Distance(player, target) <= 320f && E.IsReady())
                 E.CastOnUnit(target);
+        }
+        
+        private static InventorySlot GetItemSlot(int itemID)
+        {
+            InventorySlot slot = player.InventoryItems.First(item => (int)item.Id == itemID);
+
+            return slot;
         }
         #endregion
     }
