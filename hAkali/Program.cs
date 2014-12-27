@@ -37,7 +37,7 @@ namespace hAkali
         {
 
 
-            if (player.ChampionName.Equals(champName))
+            if (!player.ChampionName.Equals(champName))
             {
                 Game.PrintChat("hAkali Error. Character name is " + player.ChampionName);
                 return;
