@@ -205,7 +205,7 @@ namespace hAkali
                         }
 
                         if (E.IsReady(0) && Geometry.Distance(player, qTarget) <= 320f && useEFlag)
-                            player.Spellbook.CastSpell(E.Slot, eTarget);
+                            player.Spellbook.CastSpell(E.Slot, qTarget);
                         else if (R.IsReady(0) && Geometry.Distance(player, qTarget) <= 800f && useRFlag)
                             player.Spellbook.CastSpell(R.Slot, qTarget);
 
