@@ -38,7 +38,10 @@ namespace hAkali
 
 
             if (player.ChampionName.Equals(champName))
+            {
+                Game.PrintChat("hAkali Error.");
                 return;
+            }
             else
                 Game.PrintChat("hAkali Loaded.");
 
