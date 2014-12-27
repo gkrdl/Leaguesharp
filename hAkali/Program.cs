@@ -209,7 +209,7 @@ namespace hAkali
                         else if (R.IsReady(0) && Geometry.Distance(player, qTarget) <= 800f && useRFlag)
                             R.CastOnUnit(qTarget, true);
 
-                        if (qTarget.Health <= qTarget.TotalHeal / 3)
+                        if (qTarget.Health <= qTarget.MaxHealth / 2)
                         {
                             if (cutlassFlag && cutlass.IsReady())
                                 cutlass.Cast(qTarget);
@@ -247,7 +247,7 @@ namespace hAkali
                         else if (R.IsReady(0) && Geometry.Distance(player, rTarget) <= 800f && useRFlag)
                             R.CastOnUnit(rTarget, true);
 
-                        if (rTarget.Health <= rTarget.TotalHeal / 3)
+                        if (rTarget.Health <= rTarget.MaxHealth / 2)
                         {
                             if (cutlassFlag && cutlass.IsReady())
                                 cutlass.Cast(rTarget);
@@ -292,7 +292,7 @@ namespace hAkali
                         else if (R.IsReady(0) && Geometry.Distance(player, qTarget) <= 800f && useRFlag)
                             R.CastOnUnit(qTarget, true);
 
-                        if (qTarget.Health <= qTarget.TotalHeal / 2)
+                        if (qTarget.Health <= qTarget.MaxHealth / 2)
                         {
                             if (cutlassFlag && cutlass.IsReady())
                                 cutlass.Cast(qTarget);
@@ -333,7 +333,7 @@ namespace hAkali
                             E.CastOnUnit(rTarget, true);
 
 
-                        if (rTarget.Health <= rTarget.TotalHeal / 2)
+                        if (rTarget.Health <= rTarget.MaxHealth / 2)
                         {
                             if (cutlassFlag && cutlass.IsReady())
                                 cutlass.Cast(rTarget);
