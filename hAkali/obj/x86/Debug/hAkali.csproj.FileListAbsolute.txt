@@ -1,11 +1,15 @@
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\bin\Release\hAkali.exe.config
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\bin\Release\hAkali.exe
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\bin\Release\hAkali.pdb
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\bin\Release\LeagueSharp.Common.dll
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\bin\Release\LeagueSharp.dll
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\bin\Release\SharpDX.Direct3D9.dll
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\bin\Release\SharpDX.dll
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\bin\Release\LeagueSharp.xml
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\obj\x86\Debug\hAkali.csprojResolveAssemblyReference.cache
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\obj\x86\Debug\hAkali.exe
-C:\Users\선학\Documents\Visual Studio 2010\Projects\hAkali\hAkali\obj\x86\Debug\hAkali.pdb
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\hAkali.exe.config
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\hAkali.exe
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\hAkali.pdb
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\LeagueSharp.Common.dll
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\LeagueSharp.dll
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\SharpDX.dll
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\SharpDX.Toolkit.dll
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\SharpDX.Toolkit.Graphics.dll
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\LeagueSharp.xml
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\SharpDX.Toolkit.xml
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\bin\Release\SharpDX.Toolkit.Graphics.xml
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\obj\x86\Debug\hAkali.csprojResolveAssemblyReference.cache
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\obj\x86\Debug\hAkali.exe
+C:\Users\선학\Documents\LeagueSharp\Leaguesharp\hAkali\obj\x86\Debug\hAkali.pdb

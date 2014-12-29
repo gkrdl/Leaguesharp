@@ -17,6 +17,7 @@ namespace hAkali
         private static Spell Q, W, E, R;
         private static Items.Item cutlass;  //3144
         private static Items.Item gunblade; //3146
+        private static Items.Item dfg; //3128
 
 
         private static Menu configMenu;
@@ -25,6 +26,7 @@ namespace hAkali
 
         private static int remainingTime = 8;
         private static Timer wTimer = new Timer();
+
         #endregion
 
         #region Initialize
@@ -63,7 +65,7 @@ namespace hAkali
             //Items Setting
             cutlass = new Items.Item(3144, 450);
             gunblade = new Items.Item(3146, 700);
-
+            dfg = new Items.Item(3128, 750);
             
             //Menu Setting
             configMenu = new Menu("hAkali", "hAkali", true);
@@ -82,6 +84,7 @@ namespace hAkali
             configMenu.SubMenu("Combo").AddItem(new MenuItem("Only Use R", "use R, when Q is available").SetValue(true));
             configMenu.SubMenu("Combo").AddItem(new MenuItem("Cutlass", "Use Cutlass").SetValue(true));
             configMenu.SubMenu("Combo").AddItem(new MenuItem("Gunblade", "Use Gunblade").SetValue(true));
+            configMenu.SubMenu("Combo").AddItem(new MenuItem("DFG", "Use DFG").SetValue(true));
 
             configMenu.AddSubMenu(new Menu("Harass", "Harass"));
             configMenu.SubMenu("Harass").AddItem(new MenuItem("Use Q", "Use Q").SetValue(true));
@@ -176,6 +179,7 @@ namespace hAkali
             Orbwalker.SetAttack(true);
             bool gunbladeFlag = configMenu.SubMenu("Combo").Item("Gunblade").GetValue<bool>();
             bool cutlassFlag = configMenu.SubMenu("Combo").Item("Cutlass").GetValue<bool>();
+            bool dfgFlag = configMenu.SubMenu("Combo").Item("DFG").GetValue<bool>();
             bool useQFlag = configMenu.SubMenu("Combo").Item("Use Q").GetValue<bool>();
             bool useWFlag = configMenu.SubMenu("Combo").Item("Use W").GetValue<bool>();
             bool useEFlag = configMenu.SubMenu("Combo").Item("Use E").GetValue<bool>();
@@ -183,6 +187,9 @@ namespace hAkali
             bool onlyUseRFlag = configMenu.SubMenu("Combo").Item("Only Use R").GetValue<bool>();
 
 
+            InventorySlot cutSlot = GetItemSlot(cutlass.Id);
+            InventorySlot gunSlot = GetItemSlot(gunblade.Id);
+            InventorySlot dfgSlot = GetItemSlot(dfg.Id);
             if (!onlyUseRFlag)
             {
                 if (qTarget != null)
@@ -191,12 +198,12 @@ namespace hAkali
                     {
                         if (Q.IsReady(0) && useQFlag)
                         {
+                            player.Spellbook.CastSpell(dfgSlot.SpellSlot, qTarget);
                             player.Spellbook.CastSpell(Q.Slot, qTarget);
                         }
                         else if (R.IsReady(0) && Geometry.Distance(player, qTarget) <= 800f && useRFlag)
                         {
                             player.Spellbook.CastSpell(R.Slot, qTarget);
-
                             if (Q.IsReady(0) && useQFlag)
                                 player.Spellbook.CastSpell(Q.Slot, qTarget);
 
@@ -213,13 +220,11 @@ namespace hAkali
                         {
                             if (cutlassFlag && Items.CanUseItem(cutlass.Id))
                             {
-                                InventorySlot item = GetItemSlot(cutlass.Id);
-                                player.Spellbook.CastSpell(item.SpellSlot, qTarget);
+                                player.Spellbook.CastSpell(cutSlot.SpellSlot, qTarget);
                             }
                             if (gunbladeFlag && Items.CanUseItem(gunblade.Id))
                             {
-                                InventorySlot item = GetItemSlot(gunblade.Id);
-                                player.Spellbook.CastSpell(item.SpellSlot, qTarget);
+                                player.Spellbook.CastSpell(gunSlot.SpellSlot, qTarget);
                             }
 
                         }
@@ -242,6 +247,7 @@ namespace hAkali
                     {
                         if (R.IsReady(0) && Geometry.Distance(player, rTarget) <= 800f && useRFlag)
                         {
+                            player.Spellbook.CastSpell(dfgSlot.SpellSlot, qTarget);
                             player.Spellbook.CastSpell(R.Slot, rTarget);
                             
 
@@ -295,6 +301,7 @@ namespace hAkali
                     {
                         if (Q.IsReady(0) && useQFlag)
                         {
+                            player.Spellbook.CastSpell(dfgSlot.SpellSlot, qTarget);
                             player.Spellbook.CastSpell(Q.Slot, qTarget);
 
                             if (R.IsReady(0) && useRFlag)
@@ -347,7 +354,7 @@ namespace hAkali
                             if (Q.IsReady(0))
                             {
                                 player.Spellbook.CastSpell(R.Slot, rTarget);
-                                
+                                player.Spellbook.CastSpell(dfgSlot.SpellSlot, qTarget);
 
                                 if (useQFlag)
                                     player.Spellbook.CastSpell(Q.Slot, rTarget);
