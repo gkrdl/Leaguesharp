@@ -1,0 +1,16 @@
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\RecallVoice.exe.config
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\RecallVoice.exe
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\RecallVoice.pdb
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\LeagueSharp.Common.dll
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\LeagueSharp.dll
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\SharpDX.Direct3D9.dll
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\SharpDX.dll
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\SharpDX.Toolkit.dll
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\SharpDX.Toolkit.Graphics.dll
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\clipper_library.dll
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\LeagueSharp.xml
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\SharpDX.Toolkit.xml
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\SharpDX.Toolkit.Graphics.xml
+D:\GitHub\Leaguesharp\RecallVoice\obj\Debug\hRecallVoice.csprojResolveAssemblyReference.cache
+D:\GitHub\Leaguesharp\RecallVoice\obj\Debug\RecallVoice.exe
+D:\GitHub\Leaguesharp\RecallVoice\obj\Debug\RecallVoice.pdb

@@ -1,0 +1,2 @@
+D:\LeagueSharp\LocalAssemblies\RecallVoice24668F\bin\Release\RecallVoice.exe.config
+D:\GitHub\Leaguesharp\RecallVoice\bin\Release\RecallVoice.exe.config
