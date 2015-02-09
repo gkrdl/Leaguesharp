@@ -153,20 +153,20 @@ namespace hJayceV2FullVersion
             DateTime currentTime = new DateTime(2001, 1, 1);;
             TimeSpan currentSpan = new TimeSpan(currentTime.Ticks);
             
-            var muramana = player.GetSpellSlot("Muramana");
-            if (player.HasBuff("Muramana") 
-                && lastAttackSecond + 1.5 <= currentSpan.TotalSeconds
-                && configMenu.SubMenu("Combo").Item("UseMuramana").GetValue<bool>())
-            {
-                player.Spellbook.CastSpell(muramana);
-            }
+            //var muramana = player.GetSpellSlot("Muramana");
+            //if (player.HasBuff("Muramana") 
+            //    && lastAttackSecond + 1.5 <= currentSpan.TotalSeconds
+            //    && configMenu.SubMenu("Combo").Item("UseMuramana").GetValue<bool>())
+            //{
+            //    player.Spellbook.CastSpell(muramana);
+            //}
 
 
-            if (castQSecond + 1 <= currentSpan.TotalSeconds)
-            {
-                cancelMovt = false;
-                blockCount = 0;
-            }
+            //if (castQSecond + 1 <= currentSpan.TotalSeconds)
+            //{
+            //    cancelMovt = false;
+            //    blockCount = 0;
+            //}
         }
 
         static void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -240,7 +240,7 @@ namespace hJayceV2FullVersion
                 {
                     blockCount++;
 
-                    if (blockCount == 100)
+                    if (blockCount == 10)
                     {
                         cancelMovt = false;
                         blockCount = 0;
