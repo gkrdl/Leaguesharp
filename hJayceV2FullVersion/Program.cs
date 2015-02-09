@@ -37,6 +37,8 @@ namespace hJayceV2FullVersion
 
         private static string shotMode = string.Empty;
         private static string gapMode = string.Empty;
+
+        private static double lastAttackSecond = 0;
         #endregion
 
         #region Initialize
@@ -98,6 +100,8 @@ namespace hJayceV2FullVersion
             configMenu.SubMenu("Combo").AddItem(new MenuItem("UseHammerW", "Use Hammer W").SetValue(true));
             configMenu.SubMenu("Combo").AddItem(new MenuItem("UseHammerE", "Use Hammer E").SetValue(true));
             configMenu.SubMenu("Combo").AddItem(new MenuItem("UseHammerR", "Use Hammer R").SetValue(true));
+            configMenu.SubMenu("Combo").AddItem(new MenuItem("UseMuramana", "Use Muramana").SetValue(true));
+            configMenu.SubMenu("Combo").AddItem(new MenuItem("MuramanaMana", "Muramana Min Mana %").SetValue(new Slider(20, 0, 100)));
 
             configMenu.AddSubMenu(new Menu("Harass", "Harass"));
             configMenu.SubMenu("Harass").AddItem(new MenuItem("UseCannonQ", "Use Cannon Q").SetValue(true));
@@ -128,7 +132,9 @@ namespace hJayceV2FullVersion
             Obj_AI_Hero.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
             Obj_AI_Base.OnIssueOrder += Obj_AI_Base_OnIssueOrder;
             Orbwalking.AfterAttack += Orbwalking_AfterAttack;
+            Orbwalking.BeforeAttack += Orbwalking_BeforeAttack;
             Drawing.OnDraw += Drawing_OnDraw;
+            
         }
         #endregion
 
@@ -142,6 +148,18 @@ namespace hJayceV2FullVersion
             {
                 Harass();
             }
+            
+            DateTime currentTime = DateTime.Now;
+            TimeSpan currentSpan = new TimeSpan(currentTime.Ticks);
+            
+            var muramana = player.GetSpellSlot("Muramana");
+            if (player.HasBuff("Muramana") 
+                && lastAttackSecond + 1.5 <= currentSpan.TotalSeconds
+                && configMenu.SubMenu("Combo").Item("UseMuramana").GetValue<bool>())
+            {
+                player.Spellbook.CastSpell(muramana);
+            }
+                
         }
 
         static void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -200,6 +218,7 @@ namespace hJayceV2FullVersion
 
         private static void Obj_AI_Base_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
         {
+            
             if (sender == null || !sender.IsValid || !sender.IsMe)
             {
                 return;
@@ -219,6 +238,39 @@ namespace hJayceV2FullVersion
                         args.Process = false;
                 }
             }
+        }
+
+        private static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            DateTime currentTime = DateTime.Now;
+            TimeSpan currentSpan = new TimeSpan(currentTime.Ticks);
+
+            var muramana = player.GetSpellSlot("Muramana");
+
+            if (args.Target.IsEnemy)
+            {
+                lastAttackSecond = currentSpan.TotalSeconds;
+                if (muramana != SpellSlot.Unknown && !player.HasBuff("Muramana")
+                    && configMenu.SubMenu("Combo").Item("UseMuramana").GetValue<bool>()
+                    && player.ManaPercentage() > configMenu.SubMenu("Combo").Item("MuramanaMana").GetValue<Slider>().Value)
+                {
+                    player.Spellbook.CastSpell(muramana);
+                }
+                else if (player.HasBuff("Muramana")
+                    && player.ManaPercentage() <= configMenu.SubMenu("Combo").Item("MuramanaMana").GetValue<Slider>().Value)
+                {
+                    player.Spellbook.CastSpell(muramana);
+                }
+            }
+            else
+            {
+                if (player.HasBuff("Muramana")
+                    && configMenu.SubMenu("Combo").Item("UseMuramana").GetValue<bool>())
+                {
+                    player.Spellbook.CastSpell(muramana);
+                }
+            }
+                
         }
 
         private static void Orbwalking_AfterAttack(AttackableUnit unit, AttackableUnit target)
