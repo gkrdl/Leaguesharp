@@ -150,7 +150,7 @@ namespace hJayceV2FullVersion
                 Harass();
             }
             
-            DateTime currentTime = DateTime.Now;
+            DateTime currentTime = new DateTime(2001, 1, 1);;
             TimeSpan currentSpan = new TimeSpan(currentTime.Ticks);
             
             var muramana = player.GetSpellSlot("Muramana");
@@ -178,7 +178,7 @@ namespace hJayceV2FullVersion
                 Vector3 ePosition = player.ServerPosition + Vector3.Normalize(args.End - player.ServerPosition) * 50;
                 if (cannonE.IsReady())
                 {
-                    DateTime currentTime = DateTime.Now;
+                    DateTime currentTime = new DateTime(2001, 1, 1);;
                     TimeSpan currentSpan = new TimeSpan(currentTime.Ticks);
 
                     castQSecond = currentSpan.TotalSeconds;
@@ -253,7 +253,7 @@ namespace hJayceV2FullVersion
 
         private static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            DateTime currentTime = DateTime.Now;
+            DateTime currentTime = new DateTime(2001, 1, 1);;
             TimeSpan currentSpan = new TimeSpan(currentTime.Ticks);
 
             var muramana = player.GetSpellSlot("Muramana");
