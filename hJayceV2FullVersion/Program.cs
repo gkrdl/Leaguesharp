@@ -229,7 +229,7 @@ namespace hJayceV2FullVersion
                 {
                     blockCount++;
 
-                    if (blockCount == 3)
+                    if (blockCount == 100)
                     {
                         cancelMovt = false;
                         blockCount = 0;
@@ -326,6 +326,7 @@ namespace hJayceV2FullVersion
             Orbwalker.SetAttack(true);
             
             bool useCannonQFlag = configMenu.SubMenu("Combo").Item("UseCannonQ").GetValue<bool>();
+            bool useCannonWFlag = configMenu.SubMenu("Combo").Item("UseCannonW").GetValue<bool>();
             bool useCannonEFlag = configMenu.SubMenu("Combo").Item("UseCannonE").GetValue<bool>();
             bool useCannonRFlag = configMenu.SubMenu("Combo").Item("UseCannonR").GetValue<bool>();
 
@@ -354,19 +355,35 @@ namespace hJayceV2FullVersion
 
                     if (player.Distance(target) > hammerRange)
                     {
-                        if ((player.Distance(target) <= hammerE.Range && hammerE.IsReady() && useHammerEFlag))
+                        if ((player.Distance(target) + 80 <= hammerE.Range && hammerE.IsReady() && useHammerEFlag) && !hammerQ.IsReady())
+                        {
                             hammerE.CastOnUnit(target, true);
+                        }
                     }
-                    else if (player.GetSpellDamage(target, SpellSlot.E) >= target.Health 
+                    else if (player.GetSpellDamage(target, SpellSlot.E) >= target.Health
                             && hammerE.IsReady() && useHammerEFlag && player.Distance(target) <= hammerE.Range)
+                    {
                         hammerE.CastOnUnit(target, true);
+                    }
 
-                    if (!hammerQ.IsReady() && player.Distance(target) < cannonQ2.Range)
+                    if (!hammerQ.IsReady() && player.Distance(target) < cannonQ2.Range && useHammerQFlag)
                     {
                         if (hammerW.IsReady() && useHammerWFlag)
                             hammerW.Cast(true);
 
                         if (R.IsReady() && useHammerRFlag)
+                        {
+                            if (!hammerE.IsReady() && useHammerEFlag)
+                                R.Cast(true);
+                            else if (!useHammerEFlag)
+                                R.Cast(true);
+                        }
+                    }
+                    else if (!useHammerQFlag)
+                    {
+                        if (!hammerE.IsReady() && useHammerEFlag)
+                            R.Cast(true);
+                        else if (!useHammerEFlag)
                             R.Cast(true);
                     }
                 }
@@ -378,6 +395,7 @@ namespace hJayceV2FullVersion
             {
                 var target = TargetSelector.GetTarget(cannonQ2.Range, TargetSelector.DamageType.Physical);
                 var target2 = TargetSelector.GetTarget(cannonQ.Range, TargetSelector.DamageType.Physical);
+                var target3 = TargetSelector.GetTarget(hammerQ.Range, TargetSelector.DamageType.Physical);
 
                 if (target != null && cannonQ2.IsReady() && cannonE.IsReady() && useCannonQFlag && useCannonEFlag)
                 {
@@ -397,6 +415,25 @@ namespace hJayceV2FullVersion
                     if (pred.Hitchance >= HitChance.High)
                         cannonQ.Cast(pred.CastPosition, true);
                     
+                }
+
+
+                if (target3 != null && useCannonRFlag)
+                {
+                    if (!cannonQ.IsReady() && useCannonQFlag)
+                    {
+                        if (!cannonW.IsReady() && useCannonWFlag)
+                            R.Cast(true);
+                        else if (!useCannonWFlag)
+                            R.Cast(true);
+                    }
+                    else if (!useCannonQFlag)
+                    {
+                        if (!cannonW.IsReady() && useCannonWFlag)
+                            R.Cast(true);
+                        else if (!useCannonWFlag)
+                            R.Cast(true);
+                    }
                 }
             }
         }

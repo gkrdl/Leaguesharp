@@ -22,3 +22,11 @@ C:\Users\선학\Documents\GitHub\Leaguesharp\hJayceV2FullVersion\bin\Release\Sha
 C:\Users\선학\Documents\GitHub\Leaguesharp\hJayceV2FullVersion\bin\Release\clipper_library.dll
 C:\Users\선학\Documents\GitHub\Leaguesharp\hJayceV2FullVersion\bin\Release\LeagueSharp.xml
 C:\Users\선학\Documents\GitHub\Leaguesharp\hJayceV2FullVersion\obj\Debug\hJayceV2FullVersion.csprojResolveAssemblyReference.cache
+D:\GitHub\Leaguesharp\hJayceV2FullVersion\bin\Release\hJayceV2FullVersion.exe.config
+D:\GitHub\Leaguesharp\hJayceV2FullVersion\obj\Debug\hJayceV2FullVersion.exe
+D:\GitHub\Leaguesharp\hJayceV2FullVersion\obj\Debug\hJayceV2FullVersion.pdb
+D:\GitHub\Leaguesharp\hJayceV2FullVersion\bin\Release\hJayceV2FullVersion.exe
+D:\GitHub\Leaguesharp\hJayceV2FullVersion\bin\Release\hJayceV2FullVersion.pdb
+D:\GitHub\Leaguesharp\hJayceV2FullVersion\bin\Release\clipper_library.dll
+D:\GitHub\Leaguesharp\hJayceV2FullVersion\bin\Release\LeagueSharp.xml
+D:\GitHub\Leaguesharp\hJayceV2FullVersion\obj\Debug\hJayceV2FullVersion.csprojResolveAssemblyReference.cache
