@@ -39,6 +39,7 @@ namespace hJayceV2FullVersion
         private static string gapMode = string.Empty;
 
         private static double lastAttackSecond = 0;
+        private static double castQSecond = 0;
         #endregion
 
         #region Initialize
@@ -159,7 +160,13 @@ namespace hJayceV2FullVersion
             {
                 player.Spellbook.CastSpell(muramana);
             }
-                
+
+
+            if (castQSecond + 1 <= currentSpan.TotalSeconds)
+            {
+                cancelMovt = false;
+                blockCount = 0;
+            }
         }
 
         static void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
@@ -171,6 +178,10 @@ namespace hJayceV2FullVersion
                 Vector3 ePosition = player.ServerPosition + Vector3.Normalize(args.End - player.ServerPosition) * 50;
                 if (cannonE.IsReady())
                 {
+                    DateTime currentTime = DateTime.Now;
+                    TimeSpan currentSpan = new TimeSpan(currentTime.Ticks);
+
+                    castQSecond = currentSpan.TotalSeconds;
                     if (shotMode.Equals("Combo")
                         && configMenu.SubMenu("Combo").Item("UseCannonE").GetValue<bool>())
                     {
