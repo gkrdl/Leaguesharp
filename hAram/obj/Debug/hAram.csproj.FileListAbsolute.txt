@@ -1,0 +1,12 @@
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\bin\Release\hAram.exe.config
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\bin\Release\hAram.exe
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\bin\Release\hAram.pdb
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\bin\Release\LeagueSharp.Common.dll
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\bin\Release\LeagueSharp.dll
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\bin\Release\SharpDX.Direct3D9.dll
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\bin\Release\SharpDX.dll
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\bin\Release\clipper_library.dll
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\bin\Release\LeagueSharp.xml
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\obj\Debug\hAram.csprojResolveAssemblyReference.cache
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\obj\Debug\hAram.exe
+C:\LeagueSharp\LocalAssemblies\hAram1BBD15B\obj\Debug\hAram.pdb
