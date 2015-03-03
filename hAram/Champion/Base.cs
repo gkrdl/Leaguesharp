@@ -19,7 +19,15 @@ namespace hAram.Champion
         public Spell E;
         public Spell R;
 
-        
+        public Menu ConfigMenu;
+        public Orbwalking.Orbwalker OrbWalker;
+
+        protected Base()
+        {
+            ConfigMenu = new Menu("hAram", "hAram");
+            ConfigMenu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
+            OrbWalker = new Orbwalking.Orbwalker(ConfigMenu.SubMenu("Orbwalking"));
+        }
     }
 
     

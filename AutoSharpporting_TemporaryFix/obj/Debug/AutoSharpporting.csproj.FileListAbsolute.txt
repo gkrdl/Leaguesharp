@@ -1,0 +1,15 @@
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\bin\Release\AutoSharpporting.exe.config
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\obj\Debug\AutoSharpporting.csprojResolveAssemblyReference.cache
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\bin\Release\AutoSharpporting.exe
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\bin\Release\AutoSharpporting.pdb
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\bin\Release\clipper_library.dll
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\bin\Release\LeagueSharp.Common.dll
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\bin\Release\LeagueSharp.dll
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\bin\Release\SharpDX.dll
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\bin\Release\LeagueSharp.xml
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\obj\Debug\AutoSharpporting.exe
+C:\Users\HAK\Documents\GitHub\새 폴더\LeagueSharp\AutoSharpporting\obj\Debug\AutoSharpporting.pdb
+C:\Users\HAK\Documents\GitHub\Leaguesharp\AutoSharpporting_TemporaryFix\bin\Release\AutoSharpporting.exe.config
+C:\Users\HAK\Documents\GitHub\Leaguesharp\AutoSharpporting_TemporaryFix\obj\Debug\AutoSharpporting.exe
+C:\Users\HAK\Documents\GitHub\Leaguesharp\AutoSharpporting_TemporaryFix\obj\Debug\AutoSharpporting.pdb
