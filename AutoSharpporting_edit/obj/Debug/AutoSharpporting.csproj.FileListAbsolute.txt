@@ -1,0 +1,2 @@
+C:\Users\HAK\Documents\AutoSharpporting\bin\Release\AutoSharpporting.exe.config
+C:\Users\HAK\Documents\AutoSharpporting\obj\Debug\AutoSharpporting.csprojResolveAssemblyReference.cache

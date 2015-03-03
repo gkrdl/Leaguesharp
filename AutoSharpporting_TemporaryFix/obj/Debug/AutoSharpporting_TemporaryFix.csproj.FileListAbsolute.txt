@@ -1,3 +1,0 @@
-C:\Users\HAK\Documents\GitHub\Leaguesharp\AutoSharpporting_TemporaryFix\bin\Release\AutoSharpporting.exe.config
-C:\Users\HAK\Documents\GitHub\Leaguesharp\AutoSharpporting_TemporaryFix\obj\Debug\AutoSharpporting.exe
-C:\Users\HAK\Documents\GitHub\Leaguesharp\AutoSharpporting_TemporaryFix\obj\Debug\AutoSharpporting.pdb
