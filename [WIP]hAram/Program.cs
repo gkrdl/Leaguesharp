@@ -6,14 +6,23 @@ using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using hAram.Libraries;
 
 namespace hAram
 {
     internal class Program
     {
+        private static Menu config;
+        private static Orbwalking.Orbwalker orb = new Orbwalking.Orbwalker(config);
+        private static Spell Q;
+        private static Spell W;
+        private static Spell E;
+        private static Spell R;
+
         private static Vector3[] buffs = { new Vector3(8922, 10, 7868), new Vector3(7473, 10, 6617), new Vector3(5929, 10, 5190), new Vector3(4751, 10, 3901)};
         private static Obj_AI_Hero Player = ObjectHandler.Player;
         private static Obj_AI_Hero target = null;
+        private static Obj_AI_Hero followTarget = null;
         private static Vector3 spawnPosition = new Vector3();
         private static string[] Assasin = { "akali", "diana", "evelynn", "fizz", "katarina", "nidalee" };
         private static string[] ADTank = { "drmnudo", "garen", "gnar", "hecarim", "jarvan iv", "nasus", "sion", "skarner", "udyr", "volibear", "warwick", "xinzhao", "yorick" };
@@ -26,6 +35,9 @@ namespace hAram
         private static string[] APOther = { "elise", "kennen", "mordekaiser", "rumble", "vladimir" };
         private static int[] Shoplist;
         private static int heroType = 0;
+        private static long lastFollowTarget = 0;
+        private static long nextFollowTargetDelay = 300000000;
+        private static string status = string.Empty;
 
         private static void Main(string[] args)
         {
@@ -34,17 +46,36 @@ namespace hAram
 
         private static void Game_OnGameLoad(EventArgs args)
         {
+            
             InitPlayer();
-
+            orb.ActiveMode = Orbwalking.OrbwalkingMode.LaneClear;
             Game.OnGameUpdate += Game_OnGameUpdate;
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            if (!Player.IsDead)
+            bool enabled = config.Item("Enabled").GetValue<bool>();
+            if (!Player.IsDead && enabled)
             {
-                
+                target = TargetSelector.GetTarget(Player.AttackRange, TargetSelector.DamageType.Physical);
+                if (target != null)
+                    orb.ActiveMode = Orbwalking.OrbwalkingMode.Combo;
+                else
+                    orb.ActiveMode = Orbwalking.OrbwalkingMode.LaneClear;
+
+                BuyItems();
+                Following();
+                CastSpells();
             }
+        }
+
+        private static void InitMenu()
+        {
+            config = new Menu("hAram", "hAram", true);
+            config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
+            config.AddItem(new MenuItem("Enabled", "Enabled").SetValue(true));
+            //config.AddSubMenu()
+            config.AddToMainMenu();
         }
 
         private static void InitPlayer()
@@ -110,6 +141,119 @@ namespace hAram
                 int[] shoplist = { 3111, 3044, 3086, 3078, 3144, 3153, 3067, 3065, 3134, 3071, 3156, 0 };
                 Shoplist = shoplist;
             }
+            
+            ChampSpellData spellData = new ChampSpellData();
+            List<Spell> lstQ = spellData.GetSpellData(Player.ChampionName.ToLower(), SpellSlot.Q, "Q");
+            List<Spell> lstW = spellData.GetSpellData(Player.ChampionName.ToLower(), SpellSlot.W, "W");
+            List<Spell> lstE = spellData.GetSpellData(Player.ChampionName.ToLower(), SpellSlot.E, "E");
+            List<Spell> lstR = spellData.GetSpellData(Player.ChampionName.ToLower(), SpellSlot.R, "R");
+
+            Q = lstQ.Count > 0 ? lstQ[0] : new Spell(SpellSlot.Q, Player.AttackRange);
+            W = lstW.Count > 0 ? lstW[0] : new Spell(SpellSlot.W, Player.AttackRange);
+            E = lstE.Count > 0 ? lstE[0] : new Spell(SpellSlot.E, Player.AttackRange);
+            R = lstR.Count > 0 ? lstR[0] : new Spell(SpellSlot.R, Player.AttackRange);
+
+        }
+
+        private static Obj_AI_Hero GetClosetTarget()
+        {
+            TargetSelector.Mode = TargetSelector.TargetingMode.Closest;
+            return TargetSelector.GetTarget(Player.AttackRange, LeagueSharp.Common.TargetSelector.DamageType.Physical);
+        }
+
+        private static Obj_AI_Hero GetFollowTarget()
+        {
+            Obj_AI_Hero target = null;
+
+            foreach (Obj_AI_Hero hero in ObjectHandler.Get<Obj_AI_Hero>().Allies)
+            {
+                if (!hero.IsDead 
+                    && !hero.InFountain()
+                    && !hero.IsMe)
+                {
+                    target = hero;
+                    lastFollowTarget = DateTime.Now.Ticks;
+                }
+            }
+            return target;
+        }
+
+        private static void Following()
+        {
+            if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay) || followTarget.IsDead)
+                GetFollowTarget();
+
+            if (status != "GetBuff")
+            {
+                Random r = new Random();
+                int distance1 = r.Next(250, 300);
+                int distance2 = r.Next(250, 300);
+                
+                if (Player.Team == GameObjectTeam.Order)
+		            Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
+	            else
+                    Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
+            }
+        }
+
+        private static void BuyItems()
+        {
+            if (Player.InFountain())
+            {
+                foreach (int item in Shoplist)
+                {
+                    if (!Items.HasItem(item, Player))
+                    {
+                        Items.Item Item = new Items.Item(item);
+                        Item.Buy();
+                    }
+                }
+            }
+        }
+
+        private static void CastSpells()
+        {
+            target = null;
+            TargetSelector.Mode = TargetSelector.TargetingMode.AutoPriority;
+            if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
+                target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Magical);
+            else
+                target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
+
+            if (target != null && W.IsReady())
+                W.CastIfHitchanceEquals(target, HitChance.Medium);
+
+            target = null;
+            if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
+                target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            else
+                target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+
+            if (target != null && Q.IsReady())
+                Q.CastIfHitchanceEquals(target, HitChance.Medium);
+
+
+            target = null;
+            if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
+                target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
+            else
+                target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
+
+            if (target != null && E.IsReady())
+                E.CastIfHitchanceEquals(target, HitChance.Medium);
+
+
+            target = null;
+            if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
+                target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
+            else
+                target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
+
+            if (target != null && R.IsReady() && R.IsKillable(target))
+                R.CastIfHitchanceEquals(target, HitChance.High);
+            
+                
+                
         }
     }
 }

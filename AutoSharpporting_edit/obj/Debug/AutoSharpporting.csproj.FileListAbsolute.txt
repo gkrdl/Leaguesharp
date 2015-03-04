@@ -1,2 +1,3 @@
 C:\Users\HAK\Documents\AutoSharpporting\bin\Release\AutoSharpporting.exe.config
 C:\Users\HAK\Documents\AutoSharpporting\obj\Debug\AutoSharpporting.csprojResolveAssemblyReference.cache
+C:\Users\HAK\Documents\GitHub\새 폴더 (2)\Leaguesharp\AutoSharpporting_edit\bin\Release\AutoSharpporting.exe.config
