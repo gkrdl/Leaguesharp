@@ -178,11 +178,10 @@ namespace hAram
 
             List<Obj_AI_Hero> lstAlies = ObjectHandler.Get<Obj_AI_Hero>().Allies;
 
-            Random rnd = new Random();
-            
-            for (int i = rnd.Next(0, lstAlies.Count - 1); i < lstAlies.Count; i++)
+
+
+            foreach (Obj_AI_Hero hero in lstAlies)
             {
-                Obj_AI_Hero hero = lstAlies[i];
                 if (!hero.IsDead
                     && !hero.InFountain()
                     && !hero.IsMe
@@ -192,6 +191,10 @@ namespace hAram
                     lastFollowTarget = DateTime.Now.Ticks;
                 }
             }
+
+                
+
+            
             return target;
         }
 
