@@ -172,7 +172,7 @@ namespace hAram
             return TargetSelector.GetTarget(Player.AttackRange, LeagueSharp.Common.TargetSelector.DamageType.Physical);
         }
 
-        private static Obj_AI_Hero GetFollowTarget(Obj_AI_Hero exceptHero)
+        private static Obj_AI_Hero GetFollowTarget()
         {
             Obj_AI_Hero target = null;
 
@@ -184,8 +184,7 @@ namespace hAram
             {
                 if (!hero.IsDead
                     && !hero.InFountain()
-                    && !hero.IsMe
-                    && !hero.Equals(exceptHero))
+                    && !hero.IsMe)
                 {
                     target = hero;
                     lastFollowTarget = DateTime.Now.Ticks;
@@ -201,14 +200,14 @@ namespace hAram
         private static void Following()
         {
             if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay) || followTarget.IsDead || followTarget.HealthPercentage() < 10)
-                followTarget = GetFollowTarget(followTarget);
+                followTarget = GetFollowTarget();
 
             if (status != "GetBuff" && (DateTime.Now.Ticks - lastFollow > followDelay))
             {
                  //&& Geometry.Distance(Player, target) > 300
                 Random r = new Random();
-                int distance1 = r.Next(150, 300);
-                int distance2 = r.Next(150, 300);
+                int distance1 = r.Next(250, 300);
+                int distance2 = r.Next(250, 300);
 
                 if (Player.AttackRange > 400)
                 {
