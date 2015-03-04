@@ -41,7 +41,10 @@ namespace hAram
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            
+            if (!Player.IsDead)
+            {
+                
+            }
         }
 
         private static void InitPlayer()
