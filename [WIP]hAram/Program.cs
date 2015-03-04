@@ -33,7 +33,7 @@ namespace hAram
         private static string[] ADCaster = { "aatrox", "fiora", "jax", "jayce", "nocturne", "poppy"};
         private static string[] APOther = { "elise", "kennen", "mordekaiser", "rumble", "vladimir" };
         private static int[] Shoplist;
-        private static int lastShopID = 0;
+        private static int lastShopID = -1;
         private static int heroType = 0;
         private static long lastFollow = 0;
         private static long followDelay = 6000000;
@@ -229,7 +229,7 @@ namespace hAram
         {
             if (Player.InFountain())
             {
-                for (int i = lastShopID; i < Shoplist.Length; i++)
+                for (int i = lastShopID + 1; i < Shoplist.Length; i++)
                 {
                     Items.Item Item = new Items.Item(Shoplist[i]);
                     Item.Buy();
@@ -342,7 +342,7 @@ namespace hAram
                     && slots[i].Id != null 
                     && slots[i].Id != 0)
                 {
-                    for (int j = lastShopID; j < Shoplist.Length; j++)
+                    for (int j = lastShopID + 1; j < Shoplist.Length; j++)
                     {
                         if (Items.HasItem(Shoplist[j])
                             && lastShopID < j)
