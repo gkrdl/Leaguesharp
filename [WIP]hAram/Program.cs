@@ -13,7 +13,7 @@ namespace hAram
     internal class Program
     {
         private static Menu config;
-        private static Orbwalking.Orbwalker orb = new Orbwalking.Orbwalker(config);
+        private static Orbwalking.Orbwalker orb;
         private static Spell Q;
         private static Spell W;
         private static Spell E;
@@ -23,7 +23,6 @@ namespace hAram
         private static Obj_AI_Hero Player = ObjectHandler.Player;
         private static Obj_AI_Hero target = null;
         private static Obj_AI_Hero followTarget = null;
-        private static Vector3 spawnPosition = new Vector3();
         private static string[] Assasin = { "akali", "diana", "evelynn", "fizz", "katarina", "nidalee" };
         private static string[] ADTank = { "drmnudo", "garen", "gnar", "hecarim", "jarvan iv", "nasus", "sion", "skarner", "udyr", "volibear", "warwick", "xinzhao", "yorick" };
         private static string[] ADCarry = { "ashe", "caitlyn", "corki", "draven", "ezreal", "gankplank", "graves", "jinx", "kogmaw", "lucian", "missfortune", "quinn", "sivir", "Thresh", "tristana", "tryndamere", "twitch", "urgot", "varus", "vayne" };
@@ -34,7 +33,10 @@ namespace hAram
         private static string[] ADCaster = { "aatrox", "fiora", "jax", "jayce", "nocturne", "poppy"};
         private static string[] APOther = { "elise", "kennen", "mordekaiser", "rumble", "vladimir" };
         private static int[] Shoplist;
+        private static int lastShopID = 0;
         private static int heroType = 0;
+        private static long lastFollow = 0;
+        private static long followDelay = 6000000;
         private static long lastFollowTarget = 0;
         private static long nextFollowTargetDelay = 300000000;
         private static string status = string.Empty;
@@ -46,7 +48,8 @@ namespace hAram
 
         private static void Game_OnGameLoad(EventArgs args)
         {
-            
+            Game.PrintChat("Loaded hAram");
+            InitMenu();
             InitPlayer();
             orb.ActiveMode = Orbwalking.OrbwalkingMode.LaneClear;
             Game.OnGameUpdate += Game_OnGameUpdate;
@@ -58,21 +61,30 @@ namespace hAram
             if (!Player.IsDead && enabled)
             {
                 target = TargetSelector.GetTarget(Player.AttackRange, TargetSelector.DamageType.Physical);
-                if (target != null)
-                    orb.ActiveMode = Orbwalking.OrbwalkingMode.Combo;
-                else
-                    orb.ActiveMode = Orbwalking.OrbwalkingMode.LaneClear;
 
+                orb.ActiveMode = Orbwalking.OrbwalkingMode.None;
+                orb.InAutoAttackRange(target);
+                orb.SetAttack(true);
+                orb.SetMovement(false);
+
+                float followRange = Player.AttackRange < 400 ? Player.AttackRange : 200;
+                target = TargetSelector.GetTarget(followRange, TargetSelector.DamageType.Physical);
                 BuyItems();
-                Following();
                 CastSpells();
+
+                if (target == null)
+                    Following();
+                AutoLevel();
             }
+            else
+                RefreshLastShop();
         }
 
         private static void InitMenu()
         {
             config = new Menu("hAram", "hAram", true);
             config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
+            orb = new Orbwalking.Orbwalker(config);
             config.AddItem(new MenuItem("Enabled", "Enabled").SetValue(true));
             //config.AddSubMenu()
             config.AddToMainMenu();
@@ -80,8 +92,6 @@ namespace hAram
 
         private static void InitPlayer()
         {
-            spawnPosition = Player.Position;
-
             if (ADCarry.Contains(Player.ChampionName.ToLower()))
             {
                 heroType = 1;
@@ -148,10 +158,11 @@ namespace hAram
             List<Spell> lstE = spellData.GetSpellData(Player.ChampionName.ToLower(), SpellSlot.E, "E");
             List<Spell> lstR = spellData.GetSpellData(Player.ChampionName.ToLower(), SpellSlot.R, "R");
 
-            Q = lstQ.Count > 0 ? lstQ[0] : new Spell(SpellSlot.Q, Player.AttackRange);
-            W = lstW.Count > 0 ? lstW[0] : new Spell(SpellSlot.W, Player.AttackRange);
-            E = lstE.Count > 0 ? lstE[0] : new Spell(SpellSlot.E, Player.AttackRange);
-            R = lstR.Count > 0 ? lstR[0] : new Spell(SpellSlot.R, Player.AttackRange);
+            float spellRange = Player.AttackRange < 400 ? 400 : Player.AttackRange;
+            Q = lstQ.Count > 0 ? lstQ[0] : new Spell(SpellSlot.Q, spellRange);
+            W = lstW.Count > 0 ? lstW[0] : new Spell(SpellSlot.W, spellRange);
+            E = lstE.Count > 0 ? lstE[0] : new Spell(SpellSlot.E, spellRange);
+            R = lstR.Count > 0 ? lstR[0] : new Spell(SpellSlot.R, spellRange);
 
         }
 
@@ -161,15 +172,21 @@ namespace hAram
             return TargetSelector.GetTarget(Player.AttackRange, LeagueSharp.Common.TargetSelector.DamageType.Physical);
         }
 
-        private static Obj_AI_Hero GetFollowTarget()
+        private static Obj_AI_Hero GetFollowTarget(Obj_AI_Hero exceptHero)
         {
             Obj_AI_Hero target = null;
 
-            foreach (Obj_AI_Hero hero in ObjectHandler.Get<Obj_AI_Hero>().Allies)
+            List<Obj_AI_Hero> lstAlies = ObjectHandler.Get<Obj_AI_Hero>().Allies;
+
+            Random rnd = new Random();
+            
+            for (int i = rnd.Next(0, lstAlies.Count - 1); i < lstAlies.Count; i++)
             {
-                if (!hero.IsDead 
+                Obj_AI_Hero hero = lstAlies[i];
+                if (!hero.IsDead
                     && !hero.InFountain()
-                    && !hero.IsMe)
+                    && !hero.IsMe
+                    && !hero.Equals(exceptHero))
                 {
                     target = hero;
                     lastFollowTarget = DateTime.Now.Ticks;
@@ -180,19 +197,31 @@ namespace hAram
 
         private static void Following()
         {
-            if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay) || followTarget.IsDead)
-                GetFollowTarget();
+            if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay) || followTarget.IsDead || followTarget.HealthPercentage() < 10)
+                followTarget = GetFollowTarget(followTarget);
 
-            if (status != "GetBuff")
+            if (status != "GetBuff" && (DateTime.Now.Ticks - lastFollow > followDelay))
             {
+                 //&& Geometry.Distance(Player, target) > 300
                 Random r = new Random();
-                int distance1 = r.Next(250, 300);
-                int distance2 = r.Next(250, 300);
-                
-                if (Player.Team == GameObjectTeam.Order)
-		            Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
-	            else
-                    Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
+                int distance1 = r.Next(150, 300);
+                int distance2 = r.Next(150, 300);
+
+                if (Player.AttackRange > 400)
+                {
+                    if (Player.Team == GameObjectTeam.Chaos)
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
+                    else
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
+                }
+                else
+                {
+                    if (Player.Team == GameObjectTeam.Order)
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
+                    else
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
+                }
+                lastFollow = DateTime.Now.Ticks;
             }
         }
 
@@ -200,13 +229,10 @@ namespace hAram
         {
             if (Player.InFountain())
             {
-                foreach (int item in Shoplist)
+                for (int i = lastShopID; i < Shoplist.Length; i++)
                 {
-                    if (!Items.HasItem(item, Player))
-                    {
-                        Items.Item Item = new Items.Item(item);
-                        Item.Buy();
-                    }
+                    Items.Item Item = new Items.Item(Shoplist[i]);
+                    Item.Buy();
                 }
             }
         }
@@ -221,7 +247,21 @@ namespace hAram
                 target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
 
             if (target != null && W.IsReady())
-                W.CastIfHitchanceEquals(target, HitChance.Medium);
+            {
+                var pred = W.GetPrediction(target);
+                if (pred.Hitchance >= HitChance.Medium)
+                {
+                    if (W.Speed != 0)
+                        W.Cast(pred.CastPosition);
+                    else
+                    {
+                        W.CastOnUnit(target);
+                        if (W.IsReady())
+                            W.Cast();
+                    }
+                }
+                
+            }
 
             target = null;
             if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
@@ -230,7 +270,20 @@ namespace hAram
                 target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
 
             if (target != null && Q.IsReady())
-                Q.CastIfHitchanceEquals(target, HitChance.Medium);
+            {
+                var pred = Q.GetPrediction(target);
+                if (pred.Hitchance >= HitChance.Medium)
+                {
+                    if (Q.Speed != 0)
+                        Q.Cast(pred.CastPosition);
+                    else
+                    {
+                        Q.CastOnUnit(target);
+                        if (Q.IsReady())
+                            Q.Cast();
+                    }
+                }
+            }
 
 
             target = null;
@@ -240,7 +293,20 @@ namespace hAram
                 target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
 
             if (target != null && E.IsReady())
-                E.CastIfHitchanceEquals(target, HitChance.Medium);
+            {
+                var pred = E.GetPrediction(target);
+                if (pred.Hitchance >= HitChance.Medium)
+                {
+                    if (E.Speed != 0)
+                        E.Cast(pred.CastPosition);
+                    else
+                    {
+                        E.CastOnUnit(target);
+                        if (E.IsReady())
+                            E.Cast();
+                    }
+                }
+            }
 
 
             target = null;
@@ -250,10 +316,64 @@ namespace hAram
                 target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
             if (target != null && R.IsReady() && R.IsKillable(target))
-                R.CastIfHitchanceEquals(target, HitChance.High);
+            {
+                var pred = R.GetPrediction(target);
+                if (pred.Hitchance >= HitChance.Medium)
+                {
+                    if (R.Speed != 0)
+                        R.Cast(pred.CastPosition);
+                    else
+                    {
+                        R.CastOnUnit(target);
+                        if (R.IsReady())
+                            R.Cast();
+                    }
+                }
+            }
+        }
+
+        private static void RefreshLastShop()
+        {
+            InventorySlot[] slots = Player.InventoryItems;
+
+            for (int i = 0; i < slots.Length; i++)
+            {
+                if (slots[i].IsValidSlot()
+                    && slots[i].Id != null 
+                    && slots[i].Id != 0)
+                {
+                    for (int j = lastShopID; j < Shoplist.Length; j++)
+                    {
+                        if (Items.HasItem(Shoplist[j])
+                            && lastShopID < j)
+                        {
+                            lastShopID = j;
+                        }
+                    }
+                } 
+            }
             
-                
-                
+        }
+
+        private static void GetBuffs()
+        {
+            
+        }
+
+        private static void AutoLevel()
+        {
+            if ((Q.Level + W.Level + E.Level + R.Level) < Player.Level)
+            {
+
+                if (R.Level < Q.Level)
+                    Player.Spellbook.LevelSpell(SpellSlot.R);
+                if ((Q.Level <= E.Level || Q.Level != 5) && E.Level > 0)
+                    Player.Spellbook.LevelSpell(SpellSlot.Q);
+                else if ((E.Level <= W.Level || E.Level != 5) && W.Level > 0)
+                    Player.Spellbook.LevelSpell(SpellSlot.E);
+                else
+                    Player.Spellbook.LevelSpell(SpellSlot.W);
+            }
         }
     }
 }
