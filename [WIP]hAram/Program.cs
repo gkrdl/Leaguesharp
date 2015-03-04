@@ -67,12 +67,12 @@ namespace hAram
                 orb.SetAttack(true);
                 orb.SetMovement(false);
 
-                float followRange = Player.AttackRange < 400 ? Player.AttackRange : 200;
-                target = TargetSelector.GetTarget(followRange, TargetSelector.DamageType.Physical);
+                //float followRange = Player.AttackRange < 400 ? Player.AttackRange : 200;
+                //target = TargetSelector.GetTarget(followRange, TargetSelector.DamageType.Physical);
                 BuyItems();
                 CastSpells();
 
-                if (target == null)
+                //if (target == null)
                     Following();
                 AutoLevel();
             }
