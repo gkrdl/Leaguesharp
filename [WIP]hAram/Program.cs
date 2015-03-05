@@ -23,14 +23,14 @@ namespace hAram
         private static Obj_AI_Hero Player = ObjectHandler.Player;
         private static Obj_AI_Hero target = null;
         private static Obj_AI_Hero followTarget = null;
-        private static string[] Assasin = { "akali", "diana", "evelynn", "fizz", "katarina", "nidalee" };
-        private static string[] ADTank = { "drmnudo", "garen", "gnar", "hecarim", "jarvan iv", "nasus", "sion", "skarner", "udyr", "volibear", "warwick", "xinzhao", "yorick" };
+        private static string[] Assasin = { "akali", "darius", "diana", "evelynn", "fizz", "katarina", "nidalee" };
+        private static string[] ADTank = { "drmnudo", "garen", "gnar", "hecarim", "irelia", "jarvan iv", "jax", "leesin", "nasus", "olaf", "renekton", "rengar", "shyvana", "sion", "skarner", "trundle", "udyr", "volibear", "warwick", "wukong", "xinzhao", "yorick" };
         private static string[] ADCarry = { "ashe", "caitlyn", "corki", "draven", "ezreal", "gankplank", "graves", "jinx", "kogmaw", "lucian", "missfortune", "quinn", "sivir", "Thresh", "tristana", "tryndamere", "twitch", "urgot", "varus", "vayne" };
         private static string[] APTank = { "alistar", "amumu", "blitzcrank", "braum", "chogath", "leona", "malphite", "maokai", "nautilus", "rammus", "sejuani", "shen", "singed", "zac"};
         private static string[] APCarry = { "ahri", "anivia", "annie", "brand", "cassiopeia", "fiddlesticks", "galio", "gragas", "heimerdinger", "janna", "karma", "karthus", "leblanc", "lissandra", "lulu", "lux", "malzahar", "morgana", "nami", "nunu", "oriana", "ryze", "sona", "soraka", "swain", "syndra", "taric", "twistedfate", "veigar", "velkoz", "viktor", "xerath", "ziggs", "zillean", "zyra" };
         private static string[] APHybrid = { "kayle", "teemo" };
-        private static string[] Bruiser = { "darius", "irelia", "khazix", "leesin", "olaf", "pantheon", "renekton", "rengar", "riven", "shyvana", "talon", "trundle", "vi", "wukong", "yasuo", "zed" };
-        private static string[] ADCaster = { "aatrox", "fiora", "jax", "jayce", "nocturne", "poppy"};
+        private static string[] Bruiser = { "khazix", "pantheon", "riven", "talon", "vi", "yasuo", "zed" };
+        private static string[] ADCaster = { "aatrox", "fiora", "jayce", "nocturne", "poppy"};
         private static string[] APOther = { "elise", "kennen", "mordekaiser", "rumble", "vladimir" };
         private static int[] Shoplist;
         private static List<int> lstHasItem = new List<int>();
@@ -186,17 +186,18 @@ namespace hAram
             {
                 if (!hero.IsDead
                     && !hero.InFountain()
-                    && !hero.IsMe)
+                    && !hero.IsMe
+                    && hero.HealthPercentage() > 25)
                 {
                     //&& !hero.Equals(exceptHero)
-                    if (Player.AttackRange >= hero.AttackRange)
-                    {
+                    //if (Player.AttackRange >= hero.AttackRange)
+                    //{
                         target = hero;
                         lastFollowTarget = DateTime.Now.Ticks;
                         lastFollowTargetPos = target.Position;
                         break;
                         //lessRangeHero = true;
-                    }
+                    //}
                 }
             }
 
