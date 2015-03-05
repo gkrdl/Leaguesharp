@@ -69,12 +69,8 @@ namespace hAram
                 orb.SetAttack(true);
                 orb.SetMovement(false);
 
-                //float followRange = Player.AttackRange < 400 ? Player.AttackRange : 200;
-                //target = TargetSelector.GetTarget(followRange, TargetSelector.DamageType.Physical);
                 BuyItems();
                 CastSpells();
-
-                //if (target == null)
                 Following();
                 AutoLevel();
             }
@@ -174,50 +170,120 @@ namespace hAram
             return TargetSelector.GetTarget(Player.AttackRange, LeagueSharp.Common.TargetSelector.DamageType.Physical);
         }
 
-        private static Obj_AI_Hero GetFollowTarget()
+        private static Obj_AI_Hero GetFollowTarget(Obj_AI_Hero exceptHero)
         {
-            Obj_AI_Hero target = null;
-
+            Obj_AI_Hero targett = null;
             List<Obj_AI_Hero> lstAlies = ObjectHandler.Get<Obj_AI_Hero>().Allies;
-
             bool lessRangeHero = false;
 
-            foreach (Obj_AI_Hero hero in lstAlies)
+            if (exceptHero != null)
             {
-                if (!hero.IsDead
-                    && !hero.InFountain()
-                    && !hero.IsMe
-                    && hero.HealthPercentage() > 25)
+                foreach (Obj_AI_Hero hero in lstAlies)
                 {
-                    //&& !hero.Equals(exceptHero)
-                    //if (Player.AttackRange >= hero.AttackRange)
-                    //{
-                        target = hero;
-                        lastFollowTarget = DateTime.Now.Ticks;
-                        lastFollowTargetPos = target.Position;
-                        break;
-                        //lessRangeHero = true;
-                    //}
+                    if (!hero.IsDead
+                        && !hero.InFountain()
+                        && !hero.IsMe
+                        && hero.HealthPercentage() >= 25
+                        && !hero.ChampionName.Equals(exceptHero.ChampionName))
+                    {
+                        if (Player.AttackRange >= hero.AttackRange)
+                        {
+                            //targett = hero;
+                            lessRangeHero = true;
+                            break;
+
+                        }
+                    }
+                }
+
+                foreach (Obj_AI_Hero hero in lstAlies)
+                {
+                    if (lessRangeHero)
+                    {
+                        if (!hero.IsDead
+                        && !hero.InFountain()
+                        && !hero.IsMe
+                        && hero.HealthPercentage() >= 25
+                        && !hero.ChampionName.Equals(exceptHero.ChampionName))
+                        {
+                            if (Player.AttackRange >= hero.AttackRange)
+                            {
+                                targett = hero;
+                                lastFollowTarget = DateTime.Now.Ticks;
+                                lastFollowTargetPos = targett.Position;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!hero.IsDead
+                        && !hero.InFountain()
+                        && !hero.IsMe
+                        && hero.HealthPercentage() >= 25
+                        && !hero.ChampionName.Equals(exceptHero.ChampionName))
+                        {
+                            targett = hero;
+                            lastFollowTarget = DateTime.Now.Ticks;
+                            lastFollowTargetPos = targett.Position;
+                            break;
+                        }
+                    }
                 }
             }
+            else
+            {
+                foreach (Obj_AI_Hero hero in lstAlies)
+                {
+                    if (!hero.IsDead
+                        && !hero.InFountain()
+                        && !hero.IsMe
+                        && hero.HealthPercentage() >= 25)
+                    {
+                        if (Player.AttackRange >= hero.AttackRange)
+                        {
+                            //targett = hero;
+                            lessRangeHero = true;
+                            break;
 
-            //foreach (Obj_AI_Hero hero in lstAlies)
-            //{
-            //    if (!hero.IsDead
-            //        && !hero.InFountain()
-            //        && !hero.IsMe
-            //        && !hero.Equals(exceptHero))
-            //    {
-            //        target = hero;
-            //        lastFollowTarget = DateTime.Now.Ticks;
-            //        lastFollowTargetPos = target.Position;
-            //        break;
-            //    }
-            //}
-                
+                        }
+                    }
+                }
 
-            
-            return target;
+                foreach (Obj_AI_Hero hero in lstAlies)
+                {
+                    if (lessRangeHero)
+                    {
+                        if (!hero.IsDead
+                        && !hero.InFountain()
+                        && !hero.IsMe
+                        && hero.HealthPercentage() >= 25)
+                        {
+                            if (Player.AttackRange >= hero.AttackRange)
+                            {
+                                targett = hero;
+                                lastFollowTarget = DateTime.Now.Ticks;
+                                lastFollowTargetPos = targett.Position;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!hero.IsDead
+                        && !hero.InFountain()
+                        && !hero.IsMe
+                        && hero.HealthPercentage() >= 25)
+                        {
+                            targett = hero;
+                            lastFollowTarget = DateTime.Now.Ticks;
+                            lastFollowTargetPos = targett.Position;
+                            break;
+                        }
+                    }
+                }
+            }
+            return targett;
         }
 
         private static void Following()
@@ -225,32 +291,41 @@ namespace hAram
             //if (lastFollowTargetPos.Distance(followTarget.Position) < 400)
             //    followTarget = GetFollowTarget();
             if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay)
+                || followTarget == null
                 || followTarget.IsDead
                 || followTarget.HealthPercentage() < 25)
-                followTarget = GetFollowTarget();
+                    followTarget = GetFollowTarget(followTarget);
 
-            if (status != "GetBuff" && (DateTime.Now.Ticks - lastFollow > followDelay))
+            if (followTarget != null)
             {
-                 //&& Geometry.Distance(Player, target) > 300
-                Random r = new Random();
-                int distance1 = r.Next(250, 300);
-                int distance2 = r.Next(250, 300);
+                if (status != "GetBuff" && (DateTime.Now.Ticks - lastFollow > followDelay))
+                {
+                    //&& Geometry.Distance(Player, target) > 300
+                    Random r = new Random();
+                    int distance1 = r.Next(250, 300);
+                    int distance2 = r.Next(250, 300);
 
-                if (Player.AttackRange > followTarget.AttackRange)
-                {
-                    if (Player.Team == GameObjectTeam.Chaos)
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
+                    if (Player.AttackRange > followTarget.AttackRange)
+                    {
+                        if (Player.Team == GameObjectTeam.Chaos)
+                            Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
+                        else
+                            Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
+                    }
                     else
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
+                    {
+                        if (Player.Team == GameObjectTeam.Order)
+                            Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
+                        else
+                            Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
+                    }
+
+                    if (followTarget == null && target != null)
+                    {
+                        Player.IssueOrder(GameObjectOrder.AttackTo, target);
+                    }
+                    lastFollow = DateTime.Now.Ticks;
                 }
-                else
-                {
-                    if (Player.Team == GameObjectTeam.Order)
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
-                    else
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
-                }
-                lastFollow = DateTime.Now.Ticks;
             }
         }
 
@@ -402,9 +477,9 @@ namespace hAram
 
                 if (R.Level < Q.Level)
                     Player.Spellbook.LevelSpell(SpellSlot.R);
-                if ((Q.Level <= E.Level || Q.Level != 5) && E.Level > 0)
+                if ((Q.Level <= E.Level || Q.Level != 5) && (E.Level > 0 || Q.Level == 0))
                     Player.Spellbook.LevelSpell(SpellSlot.Q);
-                else if ((E.Level <= W.Level || E.Level != 5) && W.Level > 0)
+                else if ((E.Level <= W.Level || E.Level != 5) && (W.Level > 0 || E.Level == 0))
                     Player.Spellbook.LevelSpell(SpellSlot.E);
                 else
                     Player.Spellbook.LevelSpell(SpellSlot.W);
