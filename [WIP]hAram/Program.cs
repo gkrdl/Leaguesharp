@@ -174,7 +174,7 @@ namespace hAram
             return TargetSelector.GetTarget(Player.AttackRange, LeagueSharp.Common.TargetSelector.DamageType.Physical);
         }
 
-        private static Obj_AI_Hero GetFollowTarget(Obj_AI_Hero exceptHero)
+        private static Obj_AI_Hero GetFollowTarget()
         {
             Obj_AI_Hero target = null;
 
@@ -186,29 +186,33 @@ namespace hAram
             {
                 if (!hero.IsDead
                     && !hero.InFountain()
-                    && !hero.IsMe
-                    && !hero.Equals(exceptHero))
+                    && !hero.IsMe)
                 {
+                    //&& !hero.Equals(exceptHero)
                     if (Player.AttackRange >= hero.AttackRange)
                     {
-                        lessRangeHero = true;
+                        target = hero;
+                        lastFollowTarget = DateTime.Now.Ticks;
+                        lastFollowTargetPos = target.Position;
+                        break;
+                        //lessRangeHero = true;
                     }
                 }
             }
 
-            foreach (Obj_AI_Hero hero in lstAlies)
-            {
-                if (!hero.IsDead
-                    && !hero.InFountain()
-                    && !hero.IsMe
-                    && !hero.Equals(exceptHero))
-                {
-                    target = hero;
-                    lastFollowTarget = DateTime.Now.Ticks;
-                    lastFollowTargetPos = target.Position;
-                    break;
-                }
-            }
+            //foreach (Obj_AI_Hero hero in lstAlies)
+            //{
+            //    if (!hero.IsDead
+            //        && !hero.InFountain()
+            //        && !hero.IsMe
+            //        && !hero.Equals(exceptHero))
+            //    {
+            //        target = hero;
+            //        lastFollowTarget = DateTime.Now.Ticks;
+            //        lastFollowTargetPos = target.Position;
+            //        break;
+            //    }
+            //}
                 
 
             
@@ -217,12 +221,12 @@ namespace hAram
 
         private static void Following()
         {
-            if (lastFollowTargetPos.Distance(followTarget.Position) < 400)
-                followTarget = GetFollowTarget(followTarget);
-            else if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay)
+            //if (lastFollowTargetPos.Distance(followTarget.Position) < 400)
+            //    followTarget = GetFollowTarget();
+            if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay)
                 || followTarget.IsDead
-                || followTarget.HealthPercentage() < 10)
-                followTarget = GetFollowTarget(null);
+                || followTarget.HealthPercentage() < 25)
+                followTarget = GetFollowTarget();
 
             if (status != "GetBuff" && (DateTime.Now.Ticks - lastFollow > followDelay))
             {
