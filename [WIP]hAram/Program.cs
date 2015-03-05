@@ -217,10 +217,11 @@ namespace hAram
 
         private static void Following()
         {
-            if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay) 
-                || followTarget.IsDead 
-                || followTarget.HealthPercentage() < 10
-                || lastFollowTargetPos.Distance(followTarget.Position) < 400)
+            if (lastFollowTargetPos.Distance(followTarget.Position) < 400)
+                followTarget = GetFollowTarget(followTarget);
+            else if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay)
+                || followTarget.IsDead
+                || followTarget.HealthPercentage() < 10)
                 followTarget = GetFollowTarget(null);
 
             if (status != "GetBuff" && (DateTime.Now.Ticks - lastFollow > followDelay))
