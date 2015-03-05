@@ -33,10 +33,12 @@ namespace hAram
         private static string[] ADCaster = { "aatrox", "fiora", "jax", "jayce", "nocturne", "poppy"};
         private static string[] APOther = { "elise", "kennen", "mordekaiser", "rumble", "vladimir" };
         private static int[] Shoplist;
+        private static List<int> lstHasItem = new List<int>();
         private static int lastShopID = -1;
         private static int heroType = 0;
         private static long lastFollow = 0;
         private static long followDelay = 6000000;
+        private static Vector3 lastFollowTargetPos = new Vector3();
         private static long lastFollowTarget = 0;
         private static long nextFollowTargetDelay = 300000000;
         private static string status = string.Empty;
@@ -73,7 +75,7 @@ namespace hAram
                 CastSpells();
 
                 //if (target == null)
-                    Following();
+                Following();
                 AutoLevel();
             }
             else
@@ -172,25 +174,41 @@ namespace hAram
             return TargetSelector.GetTarget(Player.AttackRange, LeagueSharp.Common.TargetSelector.DamageType.Physical);
         }
 
-        private static Obj_AI_Hero GetFollowTarget()
+        private static Obj_AI_Hero GetFollowTarget(Obj_AI_Hero exceptHero)
         {
             Obj_AI_Hero target = null;
 
             List<Obj_AI_Hero> lstAlies = ObjectHandler.Get<Obj_AI_Hero>().Allies;
 
-
+            bool lessRangeHero = false;
 
             foreach (Obj_AI_Hero hero in lstAlies)
             {
                 if (!hero.IsDead
                     && !hero.InFountain()
-                    && !hero.IsMe)
+                    && !hero.IsMe
+                    && !hero.Equals(exceptHero))
                 {
-                    target = hero;
-                    lastFollowTarget = DateTime.Now.Ticks;
+                    if (Player.AttackRange >= hero.AttackRange)
+                    {
+                        lessRangeHero = true;
+                    }
                 }
             }
 
+            foreach (Obj_AI_Hero hero in lstAlies)
+            {
+                if (!hero.IsDead
+                    && !hero.InFountain()
+                    && !hero.IsMe
+                    && !hero.Equals(exceptHero))
+                {
+                    target = hero;
+                    lastFollowTarget = DateTime.Now.Ticks;
+                    lastFollowTargetPos = target.Position;
+                    break;
+                }
+            }
                 
 
             
@@ -199,8 +217,11 @@ namespace hAram
 
         private static void Following()
         {
-            if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay) || followTarget.IsDead || followTarget.HealthPercentage() < 10)
-                followTarget = GetFollowTarget();
+            if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay) 
+                || followTarget.IsDead 
+                || followTarget.HealthPercentage() < 10
+                || lastFollowTargetPos.Distance(followTarget.Position) < 400)
+                followTarget = GetFollowTarget(null);
 
             if (status != "GetBuff" && (DateTime.Now.Ticks - lastFollow > followDelay))
             {
@@ -209,7 +230,7 @@ namespace hAram
                 int distance1 = r.Next(250, 300);
                 int distance2 = r.Next(250, 300);
 
-                if (Player.AttackRange > 400)
+                if (Player.AttackRange > followTarget.AttackRange)
                 {
                     if (Player.Team == GameObjectTeam.Chaos)
                         Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
@@ -231,10 +252,13 @@ namespace hAram
         {
             if (Player.InFountain())
             {
-                for (int i = lastShopID + 1; i < Shoplist.Length; i++)
+                for (int i = 0; i < Shoplist.Length; i++)
                 {
-                    Items.Item Item = new Items.Item(Shoplist[i]);
-                    Item.Buy();
+                    if (!lstHasItem.Contains(Shoplist[i]))
+                    {
+                        Items.Item Item = new Items.Item(Shoplist[i]);
+                        Item.Buy();
+                    }
                 }
             }
         }
@@ -346,11 +370,14 @@ namespace hAram
                 {
                     for (int j = lastShopID + 1; j < Shoplist.Length; j++)
                     {
-                        if (Items.HasItem(Shoplist[j])
-                            && lastShopID < j)
+                        if (Items.HasItem(Shoplist[j]))
+                            //&& lastShopID < j)
                         {
-                            lastShopID = j;
+                            //lastShopID = j;
+                            if (!lstHasItem.Contains(Shoplist[j]))
+                                lstHasItem.Add(Shoplist[j]);
                         }
+                        
                     }
                 } 
             }
