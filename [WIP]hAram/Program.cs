@@ -475,7 +475,7 @@ namespace hAram
             if ((Q.Level + W.Level + E.Level + R.Level) < Player.Level)
             {
 
-                if (R.Level < Q.Level)
+                if (R.Level < Q.Level && R.Level != 3)
                     Player.Spellbook.LevelSpell(SpellSlot.R);
                 if ((Q.Level <= E.Level || Q.Level != 5) && (E.Level > 0 || Q.Level == 0))
                     Player.Spellbook.LevelSpell(SpellSlot.Q);
