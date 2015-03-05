@@ -491,9 +491,9 @@ namespace hAram
 
                 if (R.Level < Q.Level && R.Level != rLevel)
                     Player.Spellbook.LevelSpell(SpellSlot.R);
-                if ((Q.Level <= E.Level || Q.Level != 5) && (E.Level > 0 || Q.Level == 0))
+                if ((Q.Level <= E.Level && Q.Level != 5) || (Q.Level == 0))
                     Player.Spellbook.LevelSpell(SpellSlot.Q);
-                else if ((E.Level <= W.Level || E.Level != 5) && (W.Level > 0 || E.Level == 0))
+                else if ((E.Level <= W.Level && E.Level != 5) || (E.Level == 0))
                     Player.Spellbook.LevelSpell(SpellSlot.E);
                 else
                     Player.Spellbook.LevelSpell(SpellSlot.W);
