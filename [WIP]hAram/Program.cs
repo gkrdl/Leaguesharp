@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
-using hAram.Libraries;
 
 namespace hAram
 {
@@ -27,7 +26,7 @@ namespace hAram
         private static string[] ADTank = { "drmnudo", "garen", "gnar", "hecarim", "irelia", "jarvan iv", "jax", "leesin", "nasus", "olaf", "renekton", "rengar", "shyvana", "sion", "skarner", "trundle", "udyr", "volibear", "warwick", "wukong", "xinzhao", "yorick" };
         private static string[] ADCarry = { "ashe", "caitlyn", "corki", "draven", "ezreal", "gankplank", "graves", "jinx", "kogmaw", "lucian", "missfortune", "quinn", "sivir", "Thresh", "tristana", "tryndamere", "twitch", "urgot", "varus", "vayne" };
         private static string[] APTank = { "alistar", "amumu", "blitzcrank", "braum", "chogath", "leona", "malphite", "maokai", "nautilus", "rammus", "sejuani", "shen", "singed", "zac"};
-        private static string[] APCarry = { "ahri", "anivia", "annie", "brand", "cassiopeia", "fiddlesticks", "galio", "gragas", "heimerdinger", "janna", "karma", "karthus", "leblanc", "lissandra", "lulu", "lux", "malzahar", "morgana", "nami", "nunu", "oriana", "ryze", "sona", "soraka", "swain", "syndra", "taric", "twistedfate", "veigar", "velkoz", "viktor", "xerath", "ziggs", "zilean", "zyra" };
+        private static string[] APCarry = { "ahri", "anivia", "annie", "brand", "cassiopeia", "fiddlesticks", "galio", "gragas", "heimerdinger", "janna", "karma", "karthus", "leblanc", "lissandra", "lulu", "lux", "malzahar", "morgana", "nami", "nunu", "orianna", "ryze", "sona", "soraka", "swain", "syndra", "taric", "twistedfate", "veigar", "velkoz", "viktor", "xerath", "ziggs", "zilean", "zyra" };
         private static string[] APHybrid = { "kayle", "teemo" };
         private static string[] Bruiser = { "khazix", "pantheon", "riven", "talon", "vi", "yasuo", "zed" };
         private static string[] ADCaster = { "aatrox", "fiora", "jayce", "nocturne", "poppy"};
@@ -42,7 +41,8 @@ namespace hAram
         private static long lastFollowTarget = 0;
         private static long nextFollowTargetDelay = 300000000;
         private static string status = string.Empty;
-
+        private static List<Obj_AI_Turret> lstTurrets = new List<Obj_AI_Turret>();
+        private static Obj_AI_Turret turret = null;
         private static void Main(string[] args)
         {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
@@ -53,8 +53,8 @@ namespace hAram
             Game.PrintChat("Loaded hAram");
             InitMenu();
             InitPlayer();
-            orb.ActiveMode = Orbwalking.OrbwalkingMode.LaneClear;
             Game.OnGameUpdate += Game_OnGameUpdate;
+            
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
@@ -63,12 +63,37 @@ namespace hAram
             if (!Player.IsDead && enabled)
             {
                 target = TargetSelector.GetTarget(Player.AttackRange, TargetSelector.DamageType.Physical);
+               
+                if (target != null)
+                {
 
-                orb.ActiveMode = Orbwalking.OrbwalkingMode.None;
-                orb.InAutoAttackRange(target);
-                orb.SetAttack(true);
-                orb.SetMovement(false);
+                    if (target.IsMinion)
+                    {
+                        if (target.Health <= Player.GetAutoAttackDamage(Player, true))
+                            orb.SetAttack(true);
+                        else
+                            orb.SetAttack(false);
+                    }
+                    else
+                        orb.SetAttack(true);
 
+                    orb.InAutoAttackRange(target);
+                    
+                }
+
+
+                //orb.SetMovement(false);
+
+                lstTurrets = ObjectHandler.Get<Obj_AI_Turret>().Enemies.ToList().FindAll(t => !t.IsDead);
+                turret = lstTurrets.OrderBy(t => t.Distance(Player)).ToList().Count > 0 ? lstTurrets.OrderBy(t => t.Distance(Player)).ToList()[0] : null;
+
+                if (turret != null & turret.Distance(Player) <= Player.AttackRange)
+                {
+                    orb.InAutoAttackRange(turret);
+                    orb.SetAttack(true);
+                }
+                    
+                
                 BuyItems();
                 CastSpells();
                 Following();
@@ -150,18 +175,26 @@ namespace hAram
                 Shoplist = shoplist;
             }
             
-            ChampSpellData spellData = new ChampSpellData();
-            List<Spell> lstQ = spellData.GetSpellData(Player.ChampionName.ToLower(), SpellSlot.Q, "Q");
-            List<Spell> lstW = spellData.GetSpellData(Player.ChampionName.ToLower(), SpellSlot.W, "W");
-            List<Spell> lstE = spellData.GetSpellData(Player.ChampionName.ToLower(), SpellSlot.E, "E");
-            List<Spell> lstR = spellData.GetSpellData(Player.ChampionName.ToLower(), SpellSlot.R, "R");
+            SpellData qData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.Q).SData;
+            Q = new Spell(SpellSlot.Q, qData.CastRange);
+            Q.Speed = qData.MissileSpeed;
+            Q.Width = qData.LineWidth;
 
-            float spellRange = Player.AttackRange < 400 ? 400 : Player.AttackRange;
-            Q = lstQ.Count > 0 ? lstQ[0] : new Spell(SpellSlot.Q, spellRange);
-            W = lstW.Count > 0 ? lstW[0] : new Spell(SpellSlot.W, spellRange);
-            E = lstE.Count > 0 ? lstE[0] : new Spell(SpellSlot.E, spellRange);
-            R = lstR.Count > 0 ? lstR[0] : new Spell(SpellSlot.R, spellRange);
+            SpellData wData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.W).SData;
+            W = new Spell(SpellSlot.W, wData.CastRange);
+            W.Speed = wData.MissileSpeed;
+            W.Width = wData.LineWidth;
 
+            SpellData eData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.E).SData;
+            E = new Spell(SpellSlot.E, eData.CastRange);
+            E.Speed = eData.MissileSpeed;
+            E.Width = eData.LineWidth;
+
+            SpellData rData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.R).SData;
+            R = new Spell(SpellSlot.R, rData.CastRange);
+            R.Speed = rData.MissileSpeed;
+            R.Width = rData.LineWidth;
+           
         }
 
         private static Obj_AI_Hero GetClosetTarget()
@@ -288,13 +321,15 @@ namespace hAram
 
         private static void Following()
         {
-            //if (lastFollowTargetPos.Distance(followTarget.Position) < 400)
-            //    followTarget = GetFollowTarget();
+
             if ((DateTime.Now.Ticks - lastFollowTarget > nextFollowTargetDelay)
                 || followTarget == null
                 || followTarget.IsDead
                 || followTarget.HealthPercentage() < 25)
-                    followTarget = GetFollowTarget(followTarget);
+            {
+
+                followTarget = GetFollowTarget(followTarget);
+            }
 
             if (followTarget != null)
             {
@@ -302,31 +337,45 @@ namespace hAram
                 {
                     //&& Geometry.Distance(Player, target) > 300
                     Random r = new Random();
-                    int distance1 = r.Next(250, 300);
-                    int distance2 = r.Next(250, 300);
+                    int distance1 = r.Next(100, 300);
+                    int distance2 = r.Next(100, 300);
 
-                    if (Player.AttackRange > followTarget.AttackRange)
+                    
+                    if (Player.AttackRange >= followTarget.AttackRange)
                     {
                         if (Player.Team == GameObjectTeam.Chaos)
+                        {
                             Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
+                            orb.SetOrbwalkingPoint(new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
+                        }
                         else
+                        {
                             Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
+                            orb.SetOrbwalkingPoint(new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
+                        }
                     }
                     else
                     {
                         if (Player.Team == GameObjectTeam.Order)
+                        {
                             Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
+                            orb.SetOrbwalkingPoint(new Vector3(followTarget.Position.X + distance1, followTarget.Position.Y, followTarget.Position.Z + distance2));
+                        }
                         else
+                        {
                             Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
-                    }
-
-                    if (followTarget == null && target != null)
-                    {
-                        Player.IssueOrder(GameObjectOrder.AttackTo, target);
+                            orb.SetOrbwalkingPoint(new Vector3(followTarget.Position.X - distance1, followTarget.Position.Y, followTarget.Position.Z - distance2));
+                        }
                     }
                     lastFollow = DateTime.Now.Ticks;
                 }
             }
+
+            //if (followTarget == null && target != null)
+            //{
+            //    if (Player.Distance(target) <= Player.AttackRange)
+            //        Player.IssueOrder(GameObjectOrder.AttackTo, target);
+            //}
         }
 
         private static void BuyItems()
@@ -347,7 +396,11 @@ namespace hAram
         private static void CastSpells()
         {
             target = null;
-            TargetSelector.Mode = TargetSelector.TargetingMode.AutoPriority;
+            if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
+                TargetSelector.Mode = TargetSelector.TargetingMode.LessCast;
+            else
+                TargetSelector.Mode = TargetSelector.TargetingMode.LessAttack ;
+
             if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
                 target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Magical);
             else
