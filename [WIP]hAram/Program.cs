@@ -41,7 +41,7 @@ namespace hAram
         private static Vector3 lastFollowTargetPos = new Vector3();
         private static long lastFollowTarget = 0;
         private static long nextFollowTargetDelay = 300000000;
-        private static string status = string.Empty;
+        private static string status = "Follow";
         private static List<Obj_AI_Turret> lstTurrets = new List<Obj_AI_Turret>();
         private static Obj_AI_Turret turret = null;
 
@@ -63,7 +63,6 @@ namespace hAram
             InitMenu();
             InitPlayer();
             Game.OnGameUpdate += Game_OnGameUpdate;
-            var kda = (Player.ChampionsKilled + (Player.Assists / 2)) / ((Player.Deaths == 0) ? 1 : Player.Deaths);
         }
 
         private static void InitMenu()
@@ -166,38 +165,7 @@ namespace hAram
             bool enabled = config.Item("Enabled").GetValue<bool>();
             if (!Player.IsDead && enabled)
             {
-                target = TargetSelector.GetTarget(Player.AttackRange, TargetSelector.DamageType.Physical);
-               
-                if (target != null)
-                {
-
-                    if (target.IsMinion)
-                    {
-                        if (target.Health <= Player.GetAutoAttackDamage(Player, true))
-                            orb.SetAttack(true);
-                        else
-                            orb.SetAttack(false);
-                    }
-                    else
-                        orb.SetAttack(true);
-
-                    orb.InAutoAttackRange(target);
-                    
-                }
-
-
-                //orb.SetMovement(false);
-
-                lstTurrets = ObjectHandler.Get<Obj_AI_Turret>().Enemies.ToList().FindAll(t => !t.IsDead);
-                turret = lstTurrets.OrderBy(t => t.Distance(Player)).ToList().Count > 0 ? lstTurrets.OrderBy(t => t.Distance(Player)).ToList()[0] : null;
-
-                if (turret != null & turret.Distance(Player) <= Player.AttackRange)
-                {
-                    orb.InAutoAttackRange(turret);
-                    orb.SetAttack(true);
-                }
-                    
-                
+                SetAttack();
                 BuyItems();
                 CastSpells();
                 Following();
@@ -210,10 +178,48 @@ namespace hAram
         #endregion
 
         #region 사용자함수
-        private static Obj_AI_Hero GetClosetTarget()
+
+        private static void SetAttack()
         {
-            TargetSelector.Mode = TargetSelector.TargetingMode.Closest;
-            return TargetSelector.GetTarget(Player.AttackRange, LeagueSharp.Common.TargetSelector.DamageType.Physical);
+            target = TargetSelector.GetTarget(Player.AttackRange, TargetSelector.DamageType.Physical);
+
+            var enemyPlayers = ObjectManager.Player.CountEnemiesInRange(3000);
+            var allyPlayers = ObjectManager.Player.CountAlliesInRange(3000);
+            if (enemyPlayers < 3) //assume at least 1 is hidden
+                enemyPlayers++;
+
+            var difference = allyPlayers - enemyPlayers;
+
+            if (target != null)
+            {
+                if (target.IsMinion)
+                {
+                    if (target.Health <= Player.GetAutoAttackDamage(Player, true))
+                        orb.SetAttack(true);
+                    else
+                        orb.SetAttack(false);
+                }
+                else
+                    orb.SetAttack(true);
+
+                orb.InAutoAttackRange(target);
+            }
+
+            if (target != null && difference >= 0)
+                status = "Fight";
+            else
+                status = "Follow";
+
+
+
+            lstTurrets = ObjectHandler.Get<Obj_AI_Turret>().Enemies.ToList().FindAll(t => !t.IsDead);
+            turret = lstTurrets.OrderBy(t => t.Distance(Player)).ToList().Count > 0 ? lstTurrets.OrderBy(t => t.Distance(Player)).ToList()[0] : null;
+
+            if (turret != null & turret.Distance(Player) <= Player.AttackRange)
+            {
+                orb.InAutoAttackRange(turret);
+                orb.SetAttack(true);
+            }
         }
 
         private static Obj_AI_Hero GetFollowTarget(Obj_AI_Hero exceptHero)
@@ -232,9 +238,8 @@ namespace hAram
                         && hero.HealthPercentage() >= 25
                         && !hero.ChampionName.Equals(exceptHero.ChampionName))
                     {
-                        if (Player.AttackRange >= hero.AttackRange)
+                        if (Player.AttackRange > hero.AttackRange)
                         {
-                            //targett = hero;
                             lessRangeHero = true;
                             break;
 
@@ -252,7 +257,7 @@ namespace hAram
                         && hero.HealthPercentage() >= 25
                         && !hero.ChampionName.Equals(exceptHero.ChampionName))
                         {
-                            if (Player.AttackRange >= hero.AttackRange)
+                            if (Player.AttackRange > hero.AttackRange)
                             {
                                 targett = hero;
                                 lastFollowTarget = DateTime.Now.Ticks;
@@ -286,9 +291,8 @@ namespace hAram
                         && !hero.IsMe
                         && hero.HealthPercentage() >= 25)
                     {
-                        if (Player.AttackRange >= hero.AttackRange)
+                        if (Player.AttackRange > hero.AttackRange)
                         {
-                            //targett = hero;
                             lessRangeHero = true;
                             break;
 
@@ -305,7 +309,7 @@ namespace hAram
                         && !hero.IsMe
                         && hero.HealthPercentage() >= 25)
                         {
-                            if (Player.AttackRange >= hero.AttackRange)
+                            if (Player.AttackRange > hero.AttackRange)
                             {
                                 targett = hero;
                                 lastFollowTarget = DateTime.Now.Ticks;
@@ -346,14 +350,39 @@ namespace hAram
 
             if (followTarget != null)
             {
-                if (status != "GetBuff" && (DateTime.Now.Ticks - lastFollow > followDelay))
+                if (status != "GetBuff" && status != "Fight" && (DateTime.Now.Ticks - lastFollow > followDelay))
                 {
-                    //&& Geometry.Distance(Player, target) > 300
                     Random r = new Random();
                     int distance1 = r.Next(100, 300);
                     int distance2 = r.Next(100, 300);
 
+                    //var enemyPlayers = ObjectManager.Player.CountEnemiesInRange(3000);
+                    //var allyPlayers = ObjectManager.Player.CountAlliesInRange(3000);
+                    //if (enemyPlayers < 3) //assume at least 1 is hidden
+                    //    enemyPlayers++;
                     
+                    //var difference = allyPlayers - enemyPlayers;
+                    //var kda = (Player.ChampionsKilled + (Player.Assists / 2)) / ((Player.Deaths == 0) ? 1 : Player.Deaths);
+
+                    //if (difference < 0)
+                    //    distance1 = 300 + kda * -40; //no enemies, position based on Kill / death / assist ratio
+                    //else
+                    //    distance1 = difference * -50 + 290 + kda * -40;
+                    
+
+                    //if (Bruiser.Contains(Player.ChampionName.ToLowerInvariant())
+                    //    || ADTank.Contains(Player.ChampionName.ToLowerInvariant())
+                    //    || APTank.Contains(Player.ChampionName.ToLowerInvariant()))
+                    //{
+                    //    distance2 = 379;
+                    //    if (difference < 0)
+                    //        distance1 = 150 + kda * -40;
+                    //    else
+                    //        distance1 = difference * -50 + 150 + kda * -40;
+                    //}
+                    //else
+                    //    distance2 = 600;
+
                     if (Player.AttackRange >= followTarget.AttackRange)
                     {
                         if (Player.Team == GameObjectTeam.Chaos)
@@ -383,12 +412,6 @@ namespace hAram
                     lastFollow = DateTime.Now.Ticks;
                 }
             }
-
-            //if (followTarget == null && target != null)
-            //{
-            //    if (Player.Distance(target) <= Player.AttackRange)
-            //        Player.IssueOrder(GameObjectOrder.AttackTo, target);
-            //}
         }
 
         private static void BuyItems()
@@ -401,27 +424,18 @@ namespace hAram
                     {
                         Items.Item Item = new Items.Item(Shoplist[i]);
                         Item.Buy();
-                        InventorySlot[] slots = Player.InventoryItems;
 
+                        InventorySlot[] slots = Player.InventoryItems;
                         for (int j = 0; j < slots.Length; j++)
                         {
                             if (slots[j].IsValidSlot()
                                 && slots[j].Id != null
-                                && slots[j].Id != 0)
+                                && slots[j].Id != 0
+                                && Items.HasItem(Shoplist[i])
+                                && !lstHasItem.Contains(Shoplist[i]))
                             {
-                                for (int k = lastShopID + 1; k < Shoplist.Length; k++)
-                                {
-                                    if (Items.HasItem(Shoplist[j]))
-                                    //&& lastShopID < j)
-                                    {
-                                        //lastShopID = j;
-                                        if (!lstHasItem.Contains(Shoplist[j]))
-                                        {
-                                            lstHasItem.Add(Shoplist[j]);
-                                        }
-                                    }
-
-                                }
+                                lstHasItem.Add(Shoplist[i]);
+                                break;
                             }
                         }
                         
@@ -433,7 +447,9 @@ namespace hAram
         private static void CastSpells()
         {
             target = null;
-            if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
+            if (heroType == 2 || heroType == 3 || heroType == 5 || heroType == 6 || heroType == 9)
+                TargetSelector.Mode = TargetSelector.TargetingMode.Closest;
+            else if (heroType == 4 || heroType == 7 || heroType == 8)
                 TargetSelector.Mode = TargetSelector.TargetingMode.LessCast;
             else
                 TargetSelector.Mode = TargetSelector.TargetingMode.LessAttack ;
@@ -448,11 +464,31 @@ namespace hAram
                 var pred = W.GetPrediction(target);
                 if (pred.Hitchance >= HitChance.Medium)
                 {
-                    if (W.IsReady() && wData.SData.IsToggleSpell && W.Instance.ToggleState == 0)
-                        W.Cast();
-
-                        W.CastOnUnit(target);
-                        W.Cast(pred.CastPosition);
+                    
+                    if (wData.SData.IsToggleSpell)
+                    {
+                        if (W.Instance.ToggleState == 1)
+                            W.Cast();
+                    }
+                    else
+                    {
+                        if (W.IsReady())
+                        {
+                            if (wData.SData.TargettingType == 0)
+                                W.Cast();
+                            else if (wData.SData.TargettingType == 1)
+                                W.CastOnUnit(target);
+                            else
+                                W.Cast(pred.CastPosition);
+                        }
+                        //Original Cast Logic
+                        //if (W.IsReady())
+                        //{
+                        //    W.CastOnUnit(target);
+                        //    if (W.IsReady())
+                        //        W.Cast(pred.CastPosition);
+                        //}
+                    }
                 }
                 
             }
@@ -463,26 +499,29 @@ namespace hAram
             else
                 target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
 
-            Console.WriteLine("?");
             if (target != null && Q.IsReady())
             {
                 var pred = Q.GetPrediction(target);
-                Console.WriteLine(pred.Hitchance);
                 if (pred.Hitchance >= HitChance.Medium)
                 {
-                    if (Q.IsReady() && qData.SData.IsToggleSpell && Q.Instance.ToggleState == 0)
+                    if (qData.SData.IsToggleSpell)
                     {
-                        Console.WriteLine("1");
-                        Q.Cast();
+                        if (Q.Instance.ToggleState == 1)
+                            Q.Cast();
                     }
-                    //else if (Q.CanCast(target))
-                    //{ 
-                        Q.CastOnUnit(target); 
-                    //}
-                    //else
-                    //{ 
-                        Q.Cast(pred.CastPosition); 
-                    //}
+                    else
+                    {
+                        if (Q.IsReady())
+                        {
+                            if (qData.SData.TargettingType == 0)
+                                Q.Cast();
+                            else if (qData.SData.TargettingType == 1)
+                                Q.CastOnUnit(target);
+                            else
+                                Q.Cast(pred.CastPosition);
+                        }
+                    }
+
                 }
             }
 
@@ -498,11 +537,24 @@ namespace hAram
                 var pred = E.GetPrediction(target);
                 if (pred.Hitchance >= HitChance.Medium)
                 {
-                    if (E.IsReady() && eData.SData.IsToggleSpell && E.Instance.ToggleState == 0)
-                        E.Cast();
 
-                        E.CastOnUnit(target);
-                        E.Cast(pred.CastPosition);
+                    if (eData.SData.IsToggleSpell)
+                    {
+                        if (E.Instance.ToggleState == 1)
+                            E.Cast();
+                    }
+                    else
+                    {
+                        if (E.IsReady())
+                        {
+                            if (eData.SData.TargettingType == 0)
+                                E.Cast();
+                            else if (wData.SData.TargettingType == 1)
+                                E.CastOnUnit(target);
+                            else
+                                E.Cast(pred.CastPosition);
+                        }
+                    }
                 }
             }
 
@@ -513,37 +565,60 @@ namespace hAram
             else
                 target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-            if (target != null && R.IsReady() && R.IsKillable(target))
+            if (rData.SData.TargettingType == 0 && Player.HealthPercentage() <= 55)
+                R.Cast();
+
+            if (target != null && R.IsReady() && (R.IsKillable(target) || heroType == 1))
             {
                 var pred = R.GetPrediction(target);
                 if (pred.Hitchance >= HitChance.VeryHigh)
                 {
-                    if (R.IsReady() && rData.SData.IsToggleSpell && R.Instance.ToggleState == 0)
-                        R.Cast();
-
-                        R.CastOnUnit(target);
-                        R.Cast(pred.CastPosition);
+                    if (rData.SData.IsToggleSpell)
+                    {
+                        if (R.Instance.ToggleState == 1)
+                            R.Cast();
+                    }
+                    else
+                    {
+                        if (R.IsReady())
+                        {
+                            if (wData.SData.TargettingType == 1)
+                                R.CastOnUnit(target);
+                            else
+                                R.Cast(pred.CastPosition);
+                        }
+                    }
                 }
             }
             else if (target != null && R.IsReady() && (heroType == 2 || heroType == 3 || heroType == 5))
             {
                 if (Player.HealthPercentage() <= 40)
                 {
-                    if (R.IsReady() && rData.SData.IsToggleSpell && R.Instance.ToggleState == 0)
-                        R.Cast();
-
-                    R.CastOnUnit(target);
-
-                    if (R.IsReady())
+                    if (rData.SData.IsToggleSpell)
+                    {
+                        if (R.Instance.ToggleState == 1)
+                            R.Cast();
+                    }
+                    else
                     {
                         var pred = R.GetPrediction(target);
-                        if (pred.Hitchance >= HitChance.VeryHigh)
+                        if (R.IsReady())
                         {
-                            R.Cast(pred.CastPosition);
+                            if (wData.SData.TargettingType == 1)
+                                R.CastOnUnit(target);
+                            else if (pred.Hitchance >= HitChance.VeryHigh)
+                                R.Cast(pred.CastPosition);
                         }
                     }
                 }
             }
+            else if (target != null && R.IsReady())
+            {
+                if (rData.SData.TargettingType == 0 && target.HealthPercentage() < 70)
+                    R.Cast();
+
+            }
+
         }
 
         private static void RefreshLastShop()
@@ -558,16 +633,9 @@ namespace hAram
                 {
                     for (int j = lastShopID + 1; j < Shoplist.Length; j++)
                     {
-                        if (Items.HasItem(Shoplist[j]))
-                            //&& lastShopID < j)
-                        {
-                            //lastShopID = j;
-                            if (!lstHasItem.Contains(Shoplist[j]))
-                            {
-                                lstHasItem.Add(Shoplist[j]);
-                            }
-                        }
-                        
+                        if (Items.HasItem(Shoplist[j])
+                            && !lstHasItem.Contains(Shoplist[j]))
+                                lstHasItem.Add(Shoplist[j]);   
                     }
                 } 
             }
@@ -576,26 +644,22 @@ namespace hAram
 
         public static float GetSpellRange(SpellDataInst targetSpell, bool IsChargedSkill = false)
         {
-            if (targetSpell.SData.CastRangeDisplayOverride <= 0)
+            if (targetSpell.SData.CastRangeDisplayOverride <= 50)
             {
-                if (targetSpell.SData.CastRange <= 0)
+                if (targetSpell.SData.CastRange <= 50)
                 {
-                    return
-                        targetSpell.SData.CastRadius;
+                    return targetSpell.SData.CastRadius;
                 }
                 else
                 {
                     if (!IsChargedSkill)
-                        return
-                            targetSpell.SData.CastRange;
+                        return targetSpell.SData.CastRange;
                     else
-                        return
-                            targetSpell.SData.CastRadius;
+                        return targetSpell.SData.CastRadius;
                 }
             }
             else
-                return
-                    targetSpell.SData.CastRangeDisplayOverride;
+                return Player.ChampionName.ToLowerInvariant() == "urgot" ? targetSpell.SData.CastRange : targetSpell.SData.CastRangeDisplayOverride;
         }
 
         private static void GetBuffs()
