@@ -525,6 +525,25 @@ namespace hAram
                         R.Cast(pred.CastPosition);
                 }
             }
+            else if (target != null && R.IsReady() && (heroType == 2 || heroType == 3 || heroType == 5))
+            {
+                if (Player.HealthPercentage() <= 40)
+                {
+                    if (R.IsReady() && rData.SData.IsToggleSpell && R.Instance.ToggleState == 0)
+                        R.Cast();
+
+                    R.CastOnUnit(target);
+
+                    if (R.IsReady())
+                    {
+                        var pred = R.GetPrediction(target);
+                        if (pred.Hitchance >= HitChance.VeryHigh)
+                        {
+                            R.Cast(pred.CastPosition);
+                        }
+                    }
+                }
+            }
         }
 
         private static void RefreshLastShop()
