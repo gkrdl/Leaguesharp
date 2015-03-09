@@ -535,23 +535,23 @@ namespace hAram
             if (target != null && E.IsReady())
             {
                 var pred = E.GetPrediction(target);
-                if (pred.Hitchance >= HitChance.Medium)
-                {
 
-                    if (eData.SData.IsToggleSpell)
+                if (eData.SData.IsToggleSpell)
+                {
+                    if (E.Instance.ToggleState == 1)
+                        E.Cast();
+                }
+                else
+                {
+                    if (E.IsReady())
                     {
-                        if (E.Instance.ToggleState == 1)
+                        if (eData.SData.TargettingType == 0)
                             E.Cast();
-                    }
-                    else
-                    {
-                        if (E.IsReady())
+                        else if (eData.SData.TargettingType == 1)
+                            E.CastOnUnit(target);
+                        else
                         {
-                            if (eData.SData.TargettingType == 0)
-                                E.Cast();
-                            else if (wData.SData.TargettingType == 1)
-                                E.CastOnUnit(target);
-                            else
+                            if (pred.Hitchance >= HitChance.Medium)
                                 E.Cast(pred.CastPosition);
                         }
                     }
@@ -582,7 +582,7 @@ namespace hAram
                     {
                         if (R.IsReady())
                         {
-                            if (wData.SData.TargettingType == 1)
+                            if (rData.SData.TargettingType == 1)
                                 R.CastOnUnit(target);
                             else
                                 R.Cast(pred.CastPosition);
@@ -604,7 +604,7 @@ namespace hAram
                         var pred = R.GetPrediction(target);
                         if (R.IsReady())
                         {
-                            if (wData.SData.TargettingType == 1)
+                            if (rData.SData.TargettingType == 1)
                                 R.CastOnUnit(target);
                             else if (pred.Hitchance >= HitChance.VeryHigh)
                                 R.Cast(pred.CastPosition);
