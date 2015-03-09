@@ -11,6 +11,7 @@ namespace hAram
 {
     internal class Program
     {
+        #region 멤버, 변수
         private static Menu config;
         private static Orbwalking.Orbwalker orb;
         private static Spell Q;
@@ -18,7 +19,7 @@ namespace hAram
         private static Spell E;
         private static Spell R;
 
-        private static Vector3[] buffs = { new Vector3(8922, 10, 7868), new Vector3(7473, 10, 6617), new Vector3(5929, 10, 5190), new Vector3(4751, 10, 3901)};
+        //private static Vector3[] buffs = { new Vector3(8922, 10, 7868), new Vector3(7473, 10, 6617), new Vector3(5929, 10, 5190), new Vector3(4751, 10, 3901)};
         private static Obj_AI_Hero Player = ObjectHandler.Player;
         private static Obj_AI_Hero target = null;
         private static Obj_AI_Hero followTarget = null;
@@ -43,6 +44,14 @@ namespace hAram
         private static string status = string.Empty;
         private static List<Obj_AI_Turret> lstTurrets = new List<Obj_AI_Turret>();
         private static Obj_AI_Turret turret = null;
+
+        private static SpellDataInst qData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.Q);
+        private static SpellDataInst wData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.W);
+        private static SpellDataInst eData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.E);
+        private static SpellDataInst rData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.R);
+        #endregion
+
+        #region 초기화
         private static void Main(string[] args)
         {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
@@ -54,53 +63,6 @@ namespace hAram
             InitMenu();
             InitPlayer();
             Game.OnGameUpdate += Game_OnGameUpdate;
-            
-        }
-
-        private static void Game_OnGameUpdate(EventArgs args)
-        {
-            bool enabled = config.Item("Enabled").GetValue<bool>();
-            if (!Player.IsDead && enabled)
-            {
-                target = TargetSelector.GetTarget(Player.AttackRange, TargetSelector.DamageType.Physical);
-               
-                if (target != null)
-                {
-
-                    if (target.IsMinion)
-                    {
-                        if (target.Health <= Player.GetAutoAttackDamage(Player, true))
-                            orb.SetAttack(true);
-                        else
-                            orb.SetAttack(false);
-                    }
-                    else
-                        orb.SetAttack(true);
-
-                    orb.InAutoAttackRange(target);
-                    
-                }
-
-
-                //orb.SetMovement(false);
-
-                lstTurrets = ObjectHandler.Get<Obj_AI_Turret>().Enemies.ToList().FindAll(t => !t.IsDead);
-                turret = lstTurrets.OrderBy(t => t.Distance(Player)).ToList().Count > 0 ? lstTurrets.OrderBy(t => t.Distance(Player)).ToList()[0] : null;
-
-                if (turret != null & turret.Distance(Player) <= Player.AttackRange)
-                {
-                    orb.InAutoAttackRange(turret);
-                    orb.SetAttack(true);
-                }
-                    
-                
-                BuyItems();
-                CastSpells();
-                Following();
-                AutoLevel();
-            }
-            else
-                RefreshLastShop();
         }
 
         private static void InitMenu()
@@ -174,29 +136,79 @@ namespace hAram
                 int[] shoplist = { 3111, 3044, 3086, 3078, 3144, 3153, 3067, 3065, 3134, 3071, 3156, 0 };
                 Shoplist = shoplist;
             }
-            
-            SpellData qData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.Q).SData;
-            Q = new Spell(SpellSlot.Q, qData.CastRange);
-            Q.Speed = qData.MissileSpeed;
-            Q.Width = qData.LineWidth;
 
-            SpellData wData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.W).SData;
-            W = new Spell(SpellSlot.W, wData.CastRange);
-            W.Speed = wData.MissileSpeed;
-            W.Width = wData.LineWidth;
 
-            SpellData eData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.E).SData;
-            E = new Spell(SpellSlot.E, eData.CastRange);
-            E.Speed = eData.MissileSpeed;
-            E.Width = eData.LineWidth;
+            Q = new Spell(SpellSlot.Q, GetSpellRange(qData));
+            Q.Speed = qData.SData.MissileSpeed;
+            Q.Width = qData.SData.LineWidth;
+            Q.Delay = qData.SData.SpellCastTime;
 
-            SpellData rData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.R).SData;
-            R = new Spell(SpellSlot.R, rData.CastRange);
-            R.Speed = rData.MissileSpeed;
-            R.Width = rData.LineWidth;
-           
+            W = new Spell(SpellSlot.W, GetSpellRange(wData));
+            W.Speed = wData.SData.MissileSpeed;
+            W.Width = wData.SData.LineWidth;
+
+
+            E = new Spell(SpellSlot.E, GetSpellRange(eData));
+            E.Speed = eData.SData.MissileSpeed;
+            E.Width = eData.SData.LineWidth;
+
+            R = new Spell(SpellSlot.R, GetSpellRange(rData));
+            R.Speed = rData.SData.MissileSpeed;
+            R.Width = rData.SData.LineWidth;
+
         }
+        #endregion
 
+        #region 이벤트
+        private static void Game_OnGameUpdate(EventArgs args)
+        {
+            bool enabled = config.Item("Enabled").GetValue<bool>();
+            if (!Player.IsDead && enabled)
+            {
+                target = TargetSelector.GetTarget(Player.AttackRange, TargetSelector.DamageType.Physical);
+               
+                if (target != null)
+                {
+
+                    if (target.IsMinion)
+                    {
+                        if (target.Health <= Player.GetAutoAttackDamage(Player, true))
+                            orb.SetAttack(true);
+                        else
+                            orb.SetAttack(false);
+                    }
+                    else
+                        orb.SetAttack(true);
+
+                    orb.InAutoAttackRange(target);
+                    
+                }
+
+
+                //orb.SetMovement(false);
+
+                lstTurrets = ObjectHandler.Get<Obj_AI_Turret>().Enemies.ToList().FindAll(t => !t.IsDead);
+                turret = lstTurrets.OrderBy(t => t.Distance(Player)).ToList().Count > 0 ? lstTurrets.OrderBy(t => t.Distance(Player)).ToList()[0] : null;
+
+                if (turret != null & turret.Distance(Player) <= Player.AttackRange)
+                {
+                    orb.InAutoAttackRange(turret);
+                    orb.SetAttack(true);
+                }
+                    
+                
+                BuyItems();
+                CastSpells();
+                Following();
+                AutoLevel();
+                GetBuffs();
+            }
+            else
+                RefreshLastShop();
+        }
+        #endregion
+
+        #region 사용자함수
         private static Obj_AI_Hero GetClosetTarget()
         {
             TargetSelector.Mode = TargetSelector.TargetingMode.Closest;
@@ -388,6 +400,30 @@ namespace hAram
                     {
                         Items.Item Item = new Items.Item(Shoplist[i]);
                         Item.Buy();
+                        InventorySlot[] slots = Player.InventoryItems;
+
+                        for (int j = 0; j < slots.Length; j++)
+                        {
+                            if (slots[j].IsValidSlot()
+                                && slots[j].Id != null
+                                && slots[j].Id != 0)
+                            {
+                                for (int k = lastShopID + 1; k < Shoplist.Length; k++)
+                                {
+                                    if (Items.HasItem(Shoplist[j]))
+                                    //&& lastShopID < j)
+                                    {
+                                        //lastShopID = j;
+                                        if (!lstHasItem.Contains(Shoplist[j]))
+                                        {
+                                            lstHasItem.Add(Shoplist[j]);
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                        
                     }
                 }
             }
@@ -411,14 +447,11 @@ namespace hAram
                 var pred = W.GetPrediction(target);
                 if (pred.Hitchance >= HitChance.Medium)
                 {
-                    if (W.Speed != 0)
-                        W.Cast(pred.CastPosition);
-                    else
-                    {
+                    if (W.IsReady() && wData.SData.IsToggleSpell && W.Instance.ToggleState == 0)
+                        W.Cast();
+
                         W.CastOnUnit(target);
-                        if (W.IsReady())
-                            W.Cast();
-                    }
+                        W.Cast(pred.CastPosition);
                 }
                 
             }
@@ -429,19 +462,26 @@ namespace hAram
             else
                 target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
 
+            Console.WriteLine("?");
             if (target != null && Q.IsReady())
             {
                 var pred = Q.GetPrediction(target);
+                Console.WriteLine(pred.Hitchance);
                 if (pred.Hitchance >= HitChance.Medium)
                 {
-                    if (Q.Speed != 0)
-                        Q.Cast(pred.CastPosition);
-                    else
+                    if (Q.IsReady() && qData.SData.IsToggleSpell && Q.Instance.ToggleState == 0)
                     {
-                        Q.CastOnUnit(target);
-                        if (Q.IsReady())
-                            Q.Cast();
+                        Console.WriteLine("1");
+                        Q.Cast();
                     }
+                    //else if (Q.CanCast(target))
+                    //{ 
+                        Q.CastOnUnit(target); 
+                    //}
+                    //else
+                    //{ 
+                        Q.Cast(pred.CastPosition); 
+                    //}
                 }
             }
 
@@ -457,14 +497,11 @@ namespace hAram
                 var pred = E.GetPrediction(target);
                 if (pred.Hitchance >= HitChance.Medium)
                 {
-                    if (E.Speed != 0)
-                        E.Cast(pred.CastPosition);
-                    else
-                    {
+                    if (E.IsReady() && eData.SData.IsToggleSpell && E.Instance.ToggleState == 0)
+                        E.Cast();
+
                         E.CastOnUnit(target);
-                        if (E.IsReady())
-                            E.Cast();
-                    }
+                        E.Cast(pred.CastPosition);
                 }
             }
 
@@ -475,19 +512,16 @@ namespace hAram
             else
                 target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-            if (target != null && R.IsReady() && R.IsKillable(target))
+            if (target != null && R.IsReady())
             {
                 var pred = R.GetPrediction(target);
-                if (pred.Hitchance >= HitChance.Medium)
+                if (pred.Hitchance >= HitChance.VeryHigh)
                 {
-                    if (R.Speed != 0)
-                        R.Cast(pred.CastPosition);
-                    else
-                    {
+                    if (R.IsReady() && rData.SData.IsToggleSpell && R.Instance.ToggleState == 0)
+                        R.Cast();
+
                         R.CastOnUnit(target);
-                        if (R.IsReady())
-                            R.Cast();
-                    }
+                        R.Cast(pred.CastPosition);
                 }
             }
         }
@@ -509,7 +543,9 @@ namespace hAram
                         {
                             //lastShopID = j;
                             if (!lstHasItem.Contains(Shoplist[j]))
+                            {
                                 lstHasItem.Add(Shoplist[j]);
+                            }
                         }
                         
                     }
@@ -518,9 +554,55 @@ namespace hAram
             
         }
 
+        public static float GetSpellRange(SpellDataInst targetSpell, bool IsChargedSkill = false)
+        {
+            if (targetSpell.SData.CastRangeDisplayOverride <= 0)
+            {
+                if (targetSpell.SData.CastRange <= 0)
+                {
+                    return
+                        targetSpell.SData.CastRadius;
+                }
+                else
+                {
+                    if (!IsChargedSkill)
+                        return
+                            targetSpell.SData.CastRange;
+                    else
+                        return
+                            targetSpell.SData.CastRadius;
+                }
+            }
+            else
+                return
+                    targetSpell.SData.CastRangeDisplayOverride;
+        }
+
         private static void GetBuffs()
         {
-            
+            //var lstHealth = ObjectHandler.Get<Obj_AI_Base>().FindAll(health => health.Name.Contains("HA_AP_HealthRelic")).ToList().OrderBy(health => Player.Distance(health, true)).ToList();
+            //Obj_AI_Base healthBuff = null;
+
+            //if (lstHealth.Count > 0)
+            //{
+            //    healthBuff = lstHealth[0];
+            //}
+            //target = null;
+            //target = TargetSelector.GetTarget(Player.AttackRange, TargetSelector.DamageType.Physical);
+
+            //if (target == null && healthBuff != null)
+            //{
+            //    if (Player.HealthPercentage() <= 50 && Player.Distance(healthBuff.Position) > 50)
+            //    {
+            //        Console.WriteLine(Player.Distance(healthBuff.Position));
+            //        status = "GetBuff";
+            //        Player.IssueOrder(GameObjectOrder.MoveTo, healthBuff.Position);
+            //    }
+            //    else
+            //    {
+            //        status = "Follow";
+            //    }
+            //}
         }
 
         private static void AutoLevel()
@@ -552,5 +634,7 @@ namespace hAram
                     Player.Spellbook.LevelSpell(SpellSlot.W);
             }
         }
+        #endregion
     }
 }
+
