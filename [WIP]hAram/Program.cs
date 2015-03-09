@@ -63,6 +63,7 @@ namespace hAram
             InitMenu();
             InitPlayer();
             Game.OnGameUpdate += Game_OnGameUpdate;
+            var kda = (Player.ChampionsKilled + (Player.Assists / 2)) / ((Player.Deaths == 0) ? 1 : Player.Deaths);
         }
 
         private static void InitMenu()
@@ -512,7 +513,7 @@ namespace hAram
             else
                 target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-            if (target != null && R.IsReady())
+            if (target != null && R.IsReady() && R.IsKillable(target))
             {
                 var pred = R.GetPrediction(target);
                 if (pred.Hitchance >= HitChance.VeryHigh)

@@ -9,3 +9,4 @@ C:\Users\HAK\Documents\GitHub\Leaguesharp\[WIP]hAram\bin\Release\clipper_library
 C:\Users\HAK\Documents\GitHub\Leaguesharp\[WIP]hAram\bin\Release\LeagueSharp.xml
 C:\Users\HAK\Documents\GitHub\Leaguesharp\[WIP]hAram\obj\Debug\hAram.exe
 C:\Users\HAK\Documents\GitHub\Leaguesharp\[WIP]hAram\obj\Debug\hAram.pdb
+C:\Users\HAK\Documents\GitHub\Leaguesharp\[WIP]hAram\obj\Debug\hAram.csprojResolveAssemblyReference.cache
