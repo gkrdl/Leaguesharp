@@ -274,8 +274,8 @@ namespace hAram
             {
                 status = "Follow";
                 orb.SetAttack(true);
-                orb.InAutoAttackRange(target);
-                Player.IssueOrder(GameObjectOrder.AttackUnit, target);
+                orb.InAutoAttackRange(orbTarget);
+                Player.IssueOrder(GameObjectOrder.AttackUnit, orbTarget);
             }
 
 
