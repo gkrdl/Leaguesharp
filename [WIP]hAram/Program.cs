@@ -155,7 +155,6 @@ namespace hAram
             R = new Spell(SpellSlot.R, GetSpellRange(rData));
             R.Speed = rData.SData.MissileSpeed;
             R.Width = rData.SData.LineWidth;
-
         }
         #endregion
 
@@ -183,13 +182,6 @@ namespace hAram
         {
             target = TargetSelector.GetTarget(Player.AttackRange, TargetSelector.DamageType.Physical);
 
-            var enemyPlayers = ObjectManager.Player.CountEnemiesInRange(3000);
-            var allyPlayers = ObjectManager.Player.CountAlliesInRange(3000);
-            if (enemyPlayers < 3) //assume at least 1 is hidden
-                enemyPlayers++;
-
-            var difference = allyPlayers - enemyPlayers;
-
             if (target != null)
             {
                 if (target.IsMinion)
@@ -205,7 +197,7 @@ namespace hAram
                 orb.InAutoAttackRange(target);
             }
 
-            if (target != null && difference >= 0)
+            if (target != null)
                 status = "Fight";
             else
                 status = "Follow";
@@ -446,179 +438,105 @@ namespace hAram
 
         private static void CastSpells()
         {
+            CastSpell(W, wData);
+            CastSpell(Q, qData);
+            CastSpell(E, eData);
+            CastSpell(R, rData);
+        }
+
+        private static void CastSpell(Spell spell, SpellDataInst sDataInst)
+        {
             target = null;
             if (heroType == 2 || heroType == 3 || heroType == 5 || heroType == 6 || heroType == 9)
                 TargetSelector.Mode = TargetSelector.TargetingMode.Closest;
             else if (heroType == 4 || heroType == 7 || heroType == 8)
                 TargetSelector.Mode = TargetSelector.TargetingMode.LessCast;
             else
-                TargetSelector.Mode = TargetSelector.TargetingMode.LessAttack ;
+                TargetSelector.Mode = TargetSelector.TargetingMode.LessAttack;
+
 
             if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
-                target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Magical);
+                target = TargetSelector.GetTarget(spell.Range, TargetSelector.DamageType.Magical);
             else
-                target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
+                target = TargetSelector.GetTarget(spell.Range, TargetSelector.DamageType.Physical);
 
-            if (target != null && W.IsReady())
+            if (spell.Slot != SpellSlot.R)
             {
-                var pred = W.GetPrediction(target);
-                if (pred.Hitchance >= HitChance.Medium)
+                if (target != null && spell.IsReady())
                 {
-                    
-                    if (wData.SData.IsToggleSpell)
+                    var pred = spell.GetPrediction(target);
+                    if (pred.Hitchance >= HitChance.Medium)
                     {
-                        if (W.Instance.ToggleState == 1)
-                            W.Cast();
-                    }
-                    else
-                    {
-                        if (W.IsReady())
+                        if (sDataInst.SData.IsToggleSpell)
                         {
-                            if (wData.SData.TargettingType == 0)
-                                W.Cast();
-                            else if (wData.SData.TargettingType == 1)
-                                W.CastOnUnit(target);
-                            else
-                                W.Cast(pred.CastPosition);
+                            if (spell.Instance.ToggleState == 1)
+                                spell.Cast();
                         }
-                        //Original Cast Logic
-                        //if (W.IsReady())
-                        //{
-                        //    W.CastOnUnit(target);
-                        //    if (W.IsReady())
-                        //        W.Cast(pred.CastPosition);
-                        //}
-                    }
-                }
-                
-            }
-
-            target = null;
-            if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
-                target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
-            else
-                target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
-
-            if (target != null && Q.IsReady())
-            {
-                var pred = Q.GetPrediction(target);
-                if (pred.Hitchance >= HitChance.Medium)
-                {
-                    if (qData.SData.IsToggleSpell)
-                    {
-                        if (Q.Instance.ToggleState == 1)
-                            Q.Cast();
-                    }
-                    else
-                    {
-                        if (Q.IsReady())
-                        {
-                            if (qData.SData.TargettingType == 0)
-                                Q.Cast();
-                            else if (qData.SData.TargettingType == 1)
-                                Q.CastOnUnit(target);
-                            else
-                                Q.Cast(pred.CastPosition);
-                        }
-                    }
-
-                }
-            }
-
-
-            target = null;
-            if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
-                target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
-            else
-                target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
-
-            if (target != null && E.IsReady())
-            {
-                var pred = E.GetPrediction(target);
-
-                if (eData.SData.IsToggleSpell)
-                {
-                    if (E.Instance.ToggleState == 1)
-                        E.Cast();
-                }
-                else
-                {
-                    if (E.IsReady())
-                    {
-                        if (eData.SData.TargettingType == 0)
-                            E.Cast();
-                        else if (eData.SData.TargettingType == 1)
-                            E.CastOnUnit(target);
                         else
                         {
-                            if (pred.Hitchance >= HitChance.Medium)
-                                E.Cast(pred.CastPosition);
+                            if (spell.IsReady())
+                            {
+                                if (sDataInst.SData.TargettingType == 0)
+                                    spell.Cast();
+                                else if (sDataInst.SData.TargettingType == 1)
+                                    spell.CastOnUnit(target);
+                                else
+                                    spell.Cast(pred.CastPosition);
+                            }
                         }
                     }
+
                 }
             }
-
-
-            target = null;
-            if (heroType == 3 || heroType == 4 || heroType == 6 || heroType == 7 || heroType == 8)
-                target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
             else
-                target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
-
-            if (rData.SData.TargettingType == 0 && Player.HealthPercentage() <= 55)
-                R.Cast();
-
-            if (target != null && R.IsReady() && (R.IsKillable(target) || heroType == 1))
             {
-                var pred = R.GetPrediction(target);
-                if (pred.Hitchance >= HitChance.VeryHigh)
+                if (sDataInst.SData.TargettingType == 0 && Player.HealthPercentage() <= 55)
+                    spell.Cast();
+
+                var pred = spell.GetPrediction(target);
+                if (target != null && spell.IsReady() && (spell.IsKillable(target) || (heroType == 1 && status == "Fight")))
                 {
-                    if (rData.SData.IsToggleSpell)
+                    if (pred.Hitchance >= HitChance.VeryHigh)
                     {
-                        if (R.Instance.ToggleState == 1)
-                            R.Cast();
-                    }
-                    else
-                    {
-                        if (R.IsReady())
+                        if (sDataInst.SData.IsToggleSpell)
                         {
-                            if (rData.SData.TargettingType == 1)
-                                R.CastOnUnit(target);
+                            if (spell.Instance.ToggleState == 1)
+                                spell.Cast();
+                        }
+                        else
+                        {
+                            if (sDataInst.SData.TargettingType == 1)
+                                spell.CastOnUnit(target);
                             else
-                                R.Cast(pred.CastPosition);
+                                spell.Cast(pred.CastPosition);
                         }
                     }
                 }
-            }
-            else if (target != null && R.IsReady() && (heroType == 2 || heroType == 3 || heroType == 5))
-            {
-                if (Player.HealthPercentage() <= 40)
+                else if (target != null && spell.IsReady() 
+                    && (heroType == 2 || heroType == 3 || heroType == 5))
                 {
-                    if (rData.SData.IsToggleSpell)
+                    if (Player.HealthPercentage() <= 40)
                     {
-                        if (R.Instance.ToggleState == 1)
-                            R.Cast();
-                    }
-                    else
-                    {
-                        var pred = R.GetPrediction(target);
-                        if (R.IsReady())
+                        if (sDataInst.SData.IsToggleSpell)
                         {
-                            if (rData.SData.TargettingType == 1)
-                                R.CastOnUnit(target);
+                            if (spell.Instance.ToggleState == 1)
+                                spell.Cast();
+                        }
+                        else
+                        {
+                            if (sDataInst.SData.TargettingType == 1)
+                                spell.CastOnUnit(target);
                             else if (pred.Hitchance >= HitChance.VeryHigh)
-                                R.Cast(pred.CastPosition);
+                                spell.Cast(pred.CastPosition);
                         }
                     }
                 }
+                else if (target != null && R.IsReady())
+                {
+                    if (sDataInst.SData.TargettingType == 0 && target.HealthPercentage() < 70)
+                        spell.Cast();
+                }
             }
-            else if (target != null && R.IsReady())
-            {
-                if (rData.SData.TargettingType == 0 && target.HealthPercentage() < 70)
-                    R.Cast();
-
-            }
-
         }
 
         private static void RefreshLastShop()
