@@ -24,9 +24,9 @@ namespace hAram
         private static Obj_AI_Hero target = null;
         private static Obj_AI_Hero followTarget = null;
         private static string[] Assasin = { "akali", "darius", "diana", "evelynn", "fizz", "katarina", "nidalee" };
-        private static string[] ADTank = { "drmnudo", "garen", "gnar", "hecarim", "irelia", "jarvan iv", "jax", "leesin", "nasus", "olaf", "renekton", "rengar", "shyvana", "sion", "skarner", "trundle", "udyr", "volibear", "warwick", "wukong", "xinzhao", "yorick" };
-        private static string[] ADCarry = { "ashe", "caitlyn", "corki", "draven", "ezreal", "gankplank", "graves", "jinx", "kalista", "kogmaw", "lucian", "missfortune", "quinn", "sivir", "Thresh", "tristana", "tryndamere", "twitch", "urgot", "varus", "vayne" };
-        private static string[] APTank = { "alistar", "amumu", "blitzcrank", "braum", "chogath", "leona", "malphite", "maokai", "nautilus", "rammus", "sejuani", "shen", "singed", "zac"};
+        private static string[] ADTank = { "drmnudo", "garen", "gnar", "hecarim", "irelia", "jarvan iv", "jax", "leesin", "olaf", "renekton", "rengar", "shyvana", "sion", "skarner", "thresh", "trundle", "udyr", "volibear", "warwick", "wukong", "xinzhao", "yorick" };
+        private static string[] ADCarry = { "ashe", "caitlyn", "corki", "draven", "ezreal", "gankplank", "graves", "jinx", "kalista", "kogmaw", "lucian", "missfortune", "quinn", "sivir", "tristana", "tryndamere", "twitch", "urgot", "varus", "vayne" };
+        private static string[] APTank = { "alistar", "amumu", "blitzcrank", "braum", "chogath", "leona", "malphite", "maokai", "nasus", "nautilus", "rammus", "sejuani", "shen", "singed", "zac"};
         private static string[] APCarry = { "ahri", "anivia", "annie", "azir", "brand", "cassiopeia", "fiddlesticks", "galio", "gragas", "heimerdinger", "janna", "karma", "karthus", "leblanc", "lissandra", "lulu", "lux", "malzahar", "morgana", "nami", "nunu", "orianna", "ryze", "sona", "soraka", "swain", "syndra", "taric", "twistedfate", "veigar", "velkoz", "viktor", "xerath", "ziggs", "zilean", "zyra" };
         private static string[] APHybrid = { "kayle", "teemo" };
         private static string[] Bruiser = { "khazix", "pantheon", "riven", "talon", "vi", "yasuo", "zed" };
