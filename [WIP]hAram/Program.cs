@@ -560,7 +560,7 @@ namespace hAram
             
             if (spell.Slot != SpellSlot.R)
             {
-                if (gapFlag && (heroType == 1 | heroType == 8) && !spell.IsKillable(target))
+                if (gapFlag && (heroType == 1 | heroType == 8))
                     return;
 
                 if (target != null && spell.IsReady())
