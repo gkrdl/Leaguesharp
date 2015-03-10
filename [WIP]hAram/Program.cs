@@ -25,9 +25,9 @@ namespace hAram
         private static Obj_AI_Hero followTarget = null;
         private static string[] Assasin = { "akali", "darius", "diana", "evelynn", "fizz", "katarina", "nidalee" };
         private static string[] ADTank = { "drmnudo", "garen", "gnar", "hecarim", "irelia", "jarvan iv", "jax", "leesin", "nasus", "olaf", "renekton", "rengar", "shyvana", "sion", "skarner", "trundle", "udyr", "volibear", "warwick", "wukong", "xinzhao", "yorick" };
-        private static string[] ADCarry = { "ashe", "caitlyn", "corki", "draven", "ezreal", "gankplank", "graves", "jinx", "kogmaw", "lucian", "missfortune", "quinn", "sivir", "Thresh", "tristana", "tryndamere", "twitch", "urgot", "varus", "vayne" };
+        private static string[] ADCarry = { "ashe", "caitlyn", "corki", "draven", "ezreal", "gankplank", "graves", "jinx", "kalista", "kogmaw", "lucian", "missfortune", "quinn", "sivir", "Thresh", "tristana", "tryndamere", "twitch", "urgot", "varus", "vayne" };
         private static string[] APTank = { "alistar", "amumu", "blitzcrank", "braum", "chogath", "leona", "malphite", "maokai", "nautilus", "rammus", "sejuani", "shen", "singed", "zac"};
-        private static string[] APCarry = { "ahri", "anivia", "annie", "brand", "cassiopeia", "fiddlesticks", "galio", "gragas", "heimerdinger", "janna", "karma", "karthus", "leblanc", "lissandra", "lulu", "lux", "malzahar", "morgana", "nami", "nunu", "orianna", "ryze", "sona", "soraka", "swain", "syndra", "taric", "twistedfate", "veigar", "velkoz", "viktor", "xerath", "ziggs", "zilean", "zyra" };
+        private static string[] APCarry = { "ahri", "anivia", "annie", "azir", "brand", "cassiopeia", "fiddlesticks", "galio", "gragas", "heimerdinger", "janna", "karma", "karthus", "leblanc", "lissandra", "lulu", "lux", "malzahar", "morgana", "nami", "nunu", "orianna", "ryze", "sona", "soraka", "swain", "syndra", "taric", "twistedfate", "veigar", "velkoz", "viktor", "xerath", "ziggs", "zilean", "zyra" };
         private static string[] APHybrid = { "kayle", "teemo" };
         private static string[] Bruiser = { "khazix", "pantheon", "riven", "talon", "vi", "yasuo", "zed" };
         private static string[] ADCaster = { "aatrox", "fiora", "jayce", "nocturne", "poppy"};
@@ -161,6 +161,45 @@ namespace hAram
             R = new Spell(SpellSlot.R, GetSpellRange(rData));
             R.Speed = rData.SData.MissileSpeed;
             R.Width = rData.SData.LineWidth;
+
+
+            
+            //Kalista The Black Spear Use
+            if (Items.HasItem(3599))
+            {
+                List<Obj_AI_Hero> lstAlies = ObjectHandler.Get<Obj_AI_Hero>().Allies;
+                bool lessRangeHero = false;
+                foreach (Obj_AI_Hero hero in lstAlies)
+                {
+                    if (!hero.IsDead
+                        && !hero.InFountain()
+                        && !hero.IsMe
+                        && hero.HealthPercentage() >= 25)
+                    {
+                        if (Player.AttackRange > hero.AttackRange)
+                        {
+                            lessRangeHero = true;
+                            break;
+
+                        }
+                    }
+                }
+
+                foreach (Obj_AI_Hero hero in lstAlies)
+                {
+                    if (!hero.IsDead
+                        && !hero.InFountain()
+                        && !hero.IsMe
+                        && hero.HealthPercentage() >= 25)
+                    {
+                        if (Player.AttackRange > hero.AttackRange)
+                        {
+                            Items.UseItem(3599, hero);
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         private static void InitGapCloser()
