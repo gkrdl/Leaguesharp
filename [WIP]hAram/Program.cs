@@ -49,6 +49,10 @@ namespace hAram
         private static SpellDataInst wData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.W);
         private static SpellDataInst eData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.E);
         private static SpellDataInst rData = ObjectHandler.Player.Spellbook.GetSpell(SpellSlot.R);
+        private static bool qGapFlag = false;
+        private static bool wGapFlag = false;
+        private static bool eGapFlag = false;
+        private static bool rGapFlag = false;
         #endregion
 
         #region 초기화
@@ -62,7 +66,9 @@ namespace hAram
             Game.PrintChat("Loaded hAram");
             InitMenu();
             InitPlayer();
+            InitGapCloser();
             Game.OnGameUpdate += Game_OnGameUpdate;
+            Orbwalking.AfterAttack += Orbwalking_AfterAttack;
         }
 
         private static void InitMenu()
@@ -156,6 +162,25 @@ namespace hAram
             R.Speed = rData.SData.MissileSpeed;
             R.Width = rData.SData.LineWidth;
         }
+
+        private static void InitGapCloser()
+        {
+            
+            foreach (Gapcloser gap in AntiGapcloser.Spells)
+            {
+                if (gap.SpellName.Equals(qData.SData.Name))
+                    qGapFlag = true;
+                
+                if (gap.SpellName.Equals(wData.SData.Name))
+                    wGapFlag = true;
+
+                if (gap.SpellName.Equals(eData.SData.Name))
+                    eGapFlag = true;
+
+                if (gap.SpellName.Equals(rData.SData.Name))
+                    rGapFlag = true;
+            }
+        }
         #endregion
 
         #region 이벤트
@@ -164,6 +189,9 @@ namespace hAram
             bool enabled = config.Item("Enabled").GetValue<bool>();
             if (!Player.IsDead && enabled)
             {
+                if (Player.HealthPercentage() <= 20)
+                    AntiGapclose();
+
                 SetAttack();
                 BuyItems();
                 CastSpells();
@@ -174,31 +202,57 @@ namespace hAram
             else
                 RefreshLastShop();
         }
+
+        private static void Orbwalking_AfterAttack(AttackableUnit unit, AttackableUnit target)
+        {
+            status = "Fight";
+
+            float distance1 = 0;
+            if (Player.Distance(target) <= Player.AttackRange - 120)
+            {
+                Console.WriteLine("less");
+                distance1 = Player.AttackRange - Player.Distance(target) - 10;
+                if (Player.Team == GameObjectTeam.Chaos)
+                    Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X + distance1, Player.Position.Y, Player.Position.Z));
+                else
+                    Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X - distance1, Player.Position.Y, Player.Position.Z));
+            }
+            else if (Player.Distance(target) >= Player.AttackRange - 50)
+            {
+                Console.WriteLine("enough");
+                distance1 = Player.AttackRange - Player.Distance(target) - 10;
+                if (Player.Team == GameObjectTeam.Chaos)
+                    Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X - distance1, Player.Position.Y, Player.Position.Z));
+                else
+                    Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X + distance1, Player.Position.Y, Player.Position.Z));
+            }
+        }
         #endregion
 
         #region 사용자함수
 
         private static void SetAttack()
         {
-            target = TargetSelector.GetTarget(Player.AttackRange, TargetSelector.DamageType.Physical);
+            target = null;
+            AttackableUnit orbTarget = orb.GetTarget();
 
-            if (target != null)
+
+            if (orbTarget != null)
             {
-                if (target.IsMinion)
-                {
-                    if (target.Health <= Player.GetAutoAttackDamage(Player, true))
-                        orb.SetAttack(true);
-                    else
-                        orb.SetAttack(false);
-                }
-                else
-                    orb.SetAttack(true);
-
-                orb.InAutoAttackRange(target);
+                if (orbTarget.Type != GameObjectType.obj_AI_Minion)
+                    target = (Obj_AI_Hero)orbTarget;
             }
 
             if (target != null)
+            {
+                if (target.Health <= Player.GetAutoAttackDamage(Player, true))
+                    orb.SetAttack(true);
+
+                orb.InAutoAttackRange(target);
+                Player.IssueOrder(GameObjectOrder.AttackUnit, target);
                 status = "Fight";
+
+            }
             else
                 status = "Follow";
 
@@ -207,10 +261,14 @@ namespace hAram
             lstTurrets = ObjectHandler.Get<Obj_AI_Turret>().Enemies.ToList().FindAll(t => !t.IsDead);
             turret = lstTurrets.OrderBy(t => t.Distance(Player)).ToList().Count > 0 ? lstTurrets.OrderBy(t => t.Distance(Player)).ToList()[0] : null;
 
-            if (turret != null & turret.Distance(Player) <= Player.AttackRange)
+            if (turret != null)
             {
-                orb.InAutoAttackRange(turret);
-                orb.SetAttack(true);
+                if (turret.Distance(Player) <= Player.AttackRange)
+                {
+                    orb.InAutoAttackRange(turret);
+                    orb.SetAttack(true);
+                }
+                
             }
         }
 
@@ -336,7 +394,6 @@ namespace hAram
                 || followTarget.IsDead
                 || followTarget.HealthPercentage() < 25)
             {
-
                 followTarget = GetFollowTarget(followTarget);
             }
 
@@ -347,33 +404,6 @@ namespace hAram
                     Random r = new Random();
                     int distance1 = r.Next(100, 300);
                     int distance2 = r.Next(100, 300);
-
-                    //var enemyPlayers = ObjectManager.Player.CountEnemiesInRange(3000);
-                    //var allyPlayers = ObjectManager.Player.CountAlliesInRange(3000);
-                    //if (enemyPlayers < 3) //assume at least 1 is hidden
-                    //    enemyPlayers++;
-                    
-                    //var difference = allyPlayers - enemyPlayers;
-                    //var kda = (Player.ChampionsKilled + (Player.Assists / 2)) / ((Player.Deaths == 0) ? 1 : Player.Deaths);
-
-                    //if (difference < 0)
-                    //    distance1 = 300 + kda * -40; //no enemies, position based on Kill / death / assist ratio
-                    //else
-                    //    distance1 = difference * -50 + 290 + kda * -40;
-                    
-
-                    //if (Bruiser.Contains(Player.ChampionName.ToLowerInvariant())
-                    //    || ADTank.Contains(Player.ChampionName.ToLowerInvariant())
-                    //    || APTank.Contains(Player.ChampionName.ToLowerInvariant()))
-                    //{
-                    //    distance2 = 379;
-                    //    if (difference < 0)
-                    //        distance1 = 150 + kda * -40;
-                    //    else
-                    //        distance1 = difference * -50 + 150 + kda * -40;
-                    //}
-                    //else
-                    //    distance2 = 600;
 
                     if (Player.AttackRange >= followTarget.AttackRange)
                     {
@@ -438,17 +468,17 @@ namespace hAram
 
         private static void CastSpells()
         {
-            CastSpell(W, wData);
-            CastSpell(Q, qData);
-            CastSpell(E, eData);
-            CastSpell(R, rData);
+            CastSpell(E, eData, eGapFlag);
+            CastSpell(Q, qData, qGapFlag);
+            CastSpell(W, wData, wGapFlag);
+            CastSpell(R, rData, rGapFlag);
         }
 
-        private static void CastSpell(Spell spell, SpellDataInst sDataInst)
+        private static void CastSpell(Spell spell, SpellDataInst sDataInst, bool gapFlag)
         {
             target = null;
             if (heroType == 2 || heroType == 3 || heroType == 5 || heroType == 6 || heroType == 9)
-                TargetSelector.Mode = TargetSelector.TargetingMode.Closest;
+                TargetSelector.Mode = TargetSelector.TargetingMode.AutoPriority;
             else if (heroType == 4 || heroType == 7 || heroType == 8)
                 TargetSelector.Mode = TargetSelector.TargetingMode.LessCast;
             else
@@ -459,9 +489,12 @@ namespace hAram
                 target = TargetSelector.GetTarget(spell.Range, TargetSelector.DamageType.Magical);
             else
                 target = TargetSelector.GetTarget(spell.Range, TargetSelector.DamageType.Physical);
-
+            
             if (spell.Slot != SpellSlot.R)
             {
+                if (gapFlag && (heroType == 1 | heroType == 8) && !spell.IsKillable(target))
+                    return;
+
                 if (target != null && spell.IsReady())
                 {
                     var pred = spell.GetPrediction(target);
@@ -494,9 +527,11 @@ namespace hAram
                     spell.Cast();
 
                 var pred = spell.GetPrediction(target);
-                if (target != null && spell.IsReady() && (spell.IsKillable(target) || (heroType == 1 && status == "Fight")))
+                if (target != null && spell.IsReady() && (spell.IsKillable(target) 
+                    || (heroType == 1 && status == "Fight") 
+                    || (Player.HealthPercentage() <= 30 && status == "Fight")))
                 {
-                    if (pred.Hitchance >= HitChance.VeryHigh)
+                    if (pred.Hitchance >= HitChance.Medium)
                     {
                         if (sDataInst.SData.IsToggleSpell)
                         {
@@ -535,6 +570,31 @@ namespace hAram
                 {
                     if (sDataInst.SData.TargettingType == 0 && target.HealthPercentage() < 70)
                         spell.Cast();
+                }
+            }
+        }
+
+        private static void AntiGapclose()
+        {
+            Spell spell = null;
+            if (qGapFlag && Q.IsReady() && qData.SData.TargettingType == 7)
+                spell = Q;
+
+            if (wGapFlag && W.IsReady() && wData.SData.TargettingType == 7)
+                spell = W;
+            if (eGapFlag && E.IsReady() && eData.SData.TargettingType == 7)
+                spell = E;
+            if (rGapFlag && R.IsReady() && rData.SData.TargettingType == 7)
+                spell = R;
+
+            if (spell != null)
+            {
+                if (spell.IsReady())
+                {
+                    if (Player.Team == GameObjectTeam.Chaos)
+                        spell.Cast(new Vector3(Player.Position.X + spell.Range, Player.Position.Y, Player.Position.Z + spell.Range));
+                    else
+                        spell.Cast(new Vector3(Player.Position.X - spell.Range, Player.Position.Y, Player.Position.Z - spell.Range));   
                 }
             }
         }
