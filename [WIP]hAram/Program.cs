@@ -292,7 +292,9 @@ namespace hAram
                 }
             }
 
-            if (target != null)
+
+           
+            if (target != null && !Player.UnderTurret(true))
             {
                 status = "Fight";
                 orb.SetAttack(true);
@@ -326,6 +328,7 @@ namespace hAram
 
             if (turret != null)
             {
+                
                 if (turret.Distance(Player) <= Player.AttackRange)
                 {
                     orb.InAutoAttackRange(turret);
