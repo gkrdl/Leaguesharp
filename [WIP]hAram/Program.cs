@@ -270,7 +270,7 @@ namespace hAram
                     Player.IssueOrder(GameObjectOrder.AttackUnit, target);
                 }
             }
-            else
+            else if (orbTarget != null)
             {
                 status = "Follow";
                 orb.SetAttack(true);
