@@ -210,7 +210,6 @@ namespace hAram
             float distance1 = 0;
             if (Player.Distance(target) <= Player.AttackRange - 120)
             {
-                Console.WriteLine("less");
                 distance1 = Player.AttackRange - Player.Distance(target) - 10;
                 if (Player.Team == GameObjectTeam.Chaos)
                     Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X + distance1, Player.Position.Y, Player.Position.Z));
@@ -219,7 +218,6 @@ namespace hAram
             }
             else if (Player.Distance(target) >= Player.AttackRange - 50)
             {
-                Console.WriteLine("enough");
                 distance1 = Player.AttackRange - Player.Distance(target) - 10;
                 if (Player.Team == GameObjectTeam.Chaos)
                     Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X - distance1, Player.Position.Y, Player.Position.Z));
