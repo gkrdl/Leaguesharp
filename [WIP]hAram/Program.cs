@@ -470,8 +470,8 @@ namespace hAram
                 if (status != "GetBuff" && status != "Fight" && (DateTime.Now.Ticks - lastFollow > followDelay))
                 {
                     Random r = new Random();
-                    int distance1 = r.Next(100, 300);
-                    int distance2 = r.Next(100, 300);
+                    int distance1 = r.Next(50, 200);
+                    int distance2 = r.Next(50, 200);
 
                     if (Player.AttackRange >= followTarget.AttackRange)
                     {
