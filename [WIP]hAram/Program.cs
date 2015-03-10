@@ -565,7 +565,9 @@ namespace hAram
                     {
                         if (sDataInst.SData.IsToggleSpell)
                         {
-                            if (spell.Instance.ToggleState == 1)
+                            if (spell.Instance.ToggleState == 1 && sDataInst.SData.TargettingType == 6)
+                                spell.Cast(pred.CastPosition);
+                            else if (spell.Instance.ToggleState == 1)
                                 spell.Cast();
                         }
                         else
