@@ -205,24 +205,27 @@ namespace hAram
 
         private static void Orbwalking_AfterAttack(AttackableUnit unit, AttackableUnit target)
         {
-            status = "Fight";
+            if (unit.IsMe && target is Obj_AI_Hero)
+            {
+                status = "Fight";
 
-            float distance1 = 0;
-            if (Player.Distance(target) <= Player.AttackRange - 120)
-            {
-                distance1 = Player.AttackRange - Player.Distance(target) - 10;
-                if (Player.Team == GameObjectTeam.Chaos)
-                    Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X + distance1, Player.Position.Y, Player.Position.Z));
-                else
-                    Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X - distance1, Player.Position.Y, Player.Position.Z));
-            }
-            else if (Player.Distance(target) >= Player.AttackRange - 50)
-            {
-                distance1 = Player.AttackRange - Player.Distance(target) - 10;
-                if (Player.Team == GameObjectTeam.Chaos)
-                    Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X - distance1, Player.Position.Y, Player.Position.Z));
-                else
-                    Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X + distance1, Player.Position.Y, Player.Position.Z));
+                float distance1 = 0;
+                if (Player.Distance(target) <= Player.AttackRange - 120)
+                {
+                    distance1 = Player.AttackRange - Player.Distance(target) - 10;
+                    if (Player.Team == GameObjectTeam.Chaos)
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X + distance1, Player.Position.Y, Player.Position.Z));
+                    else
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X - distance1, Player.Position.Y, Player.Position.Z));
+                }
+                else if (Player.Distance(target) >= Player.AttackRange - 50)
+                {
+                    distance1 = Player.AttackRange - Player.Distance(target) - 10;
+                    if (Player.Team == GameObjectTeam.Chaos)
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X - distance1, Player.Position.Y, Player.Position.Z));
+                    else
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X + distance1, Player.Position.Y, Player.Position.Z));
+                }
             }
         }
         #endregion
@@ -232,27 +235,48 @@ namespace hAram
         private static void SetAttack()
         {
             target = null;
+            Obj_AI_Minion minionTarget = null;
             AttackableUnit orbTarget = orb.GetTarget();
 
 
             if (orbTarget != null)
             {
-                if (orbTarget.Type != GameObjectType.obj_AI_Minion)
+                if (orbTarget is Obj_AI_Hero)
+                {
+                    status = "Fight";
                     target = (Obj_AI_Hero)orbTarget;
+                }
+                else if (orbTarget is Obj_AI_Minion)
+                {
+                    status = "Follow";
+                    minionTarget = (Obj_AI_Minion)orbTarget;
+                }
             }
 
             if (target != null)
             {
-                if (target.Health <= Player.GetAutoAttackDamage(Player, true))
-                    orb.SetAttack(true);
-
+                status = "Fight";
+                orb.SetAttack(true);
                 orb.InAutoAttackRange(target);
                 Player.IssueOrder(GameObjectOrder.AttackUnit, target);
-                status = "Fight";
-
+            }
+            else if (minionTarget != null)
+            {
+                status = "Follow";
+                if (target.Health <= Player.GetAutoAttackDamage(Player, true))
+                {
+                    orb.SetAttack(true);
+                    orb.InAutoAttackRange(target);
+                    Player.IssueOrder(GameObjectOrder.AttackUnit, target);
+                }
             }
             else
+            {
                 status = "Follow";
+                orb.SetAttack(true);
+                orb.InAutoAttackRange(target);
+                Player.IssueOrder(GameObjectOrder.AttackUnit, target);
+            }
 
 
 
