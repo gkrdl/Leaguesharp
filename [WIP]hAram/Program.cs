@@ -231,12 +231,15 @@ namespace hAram
                 if (Player.HealthPercentage() <= 20)
                     AntiGapclose();
 
+                
                 SetAttack();
                 BuyItems();
-                CastSpells();
                 Following();
                 AutoLevel();
                 GetBuffs();
+
+                if (!Player.UnderTurret(true))
+                    CastSpells();
             }
             else
                 RefreshLastShop();
@@ -320,7 +323,6 @@ namespace hAram
             }
             else
                 status = "Follow";
-
 
 
             lstTurrets = ObjectHandler.Get<Obj_AI_Turret>().Enemies.ToList().FindAll(t => !t.IsDead);
