@@ -201,8 +201,6 @@ namespace hAram
             bool enabled = config.Item("Enabled").GetValue<bool>();
             if (!Player.IsDead && enabled)
             {
-                if (Player.UnderTurret(true))
-                    Game.PrintChat("UnderTurret");
                 if (Player.HealthPercentage() <= 20)
                     AntiGapclose();
 
@@ -295,7 +293,6 @@ namespace hAram
                 float distance1 = 0;
                 if (Player.Distance(target) <= Orbwalking.GetRealAutoAttackRange(Player) - 120)
                 {
-                    Game.PrintChat("Back");
                     distance1 = (Orbwalking.GetRealAutoAttackRange(Player) - Player.Distance(target) - Player.Distance(target) / 2) / 2;
                     if (Player.Team == GameObjectTeam.Chaos)
                         Orbwalking.Orbwalk(target, new Vector3(Player.Position.X + distance1, Player.Position.Y + distance1, Player.Position.Z));
@@ -304,7 +301,6 @@ namespace hAram
                 }
                 else if (Player.Distance(target) >= Orbwalking.GetRealAutoAttackRange(Player))
                 {
-                    Game.PrintChat("Forward");
                     distance1 = (Orbwalking.GetRealAutoAttackRange(Player) - Player.Distance(target) - Player.Distance(target) / 2) / 2;
                     if (Player.Team == GameObjectTeam.Chaos)
                         Orbwalking.Orbwalk(target, new Vector3(Player.Position.X - distance1, Player.Position.Y - distance1, Player.Position.Z));
