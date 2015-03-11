@@ -254,17 +254,17 @@ namespace hAram
                 {
                     distance1 = Player.AttackRange - Player.Distance(target) - 10;
                     if (Player.Team == GameObjectTeam.Chaos)
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X + distance1, Player.Position.Y, Player.Position.Z));
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z));
                     else
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X - distance1, Player.Position.Y, Player.Position.Z));
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z));
                 }
                 else if (Player.Distance(target) >= Player.AttackRange - 50)
                 {
                     distance1 = Player.AttackRange - Player.Distance(target) - 10;
                     if (Player.Team == GameObjectTeam.Chaos)
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X - distance1, Player.Position.Y, Player.Position.Z));
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z));
                     else
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X + distance1, Player.Position.Y, Player.Position.Z));
+                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z));
                 }
             }
         }
@@ -603,6 +603,7 @@ namespace hAram
                     || (heroType == 1 && status == "Fight") 
                     || (Player.HealthPercentage() <= 30 && status == "Fight")))
                 {
+
                     if (target.UnderTurret(true))
                         return;
 
