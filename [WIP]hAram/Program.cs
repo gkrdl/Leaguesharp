@@ -165,40 +165,13 @@ namespace hAram
 
             
             //Kalista The Black Spear Use
-            if (Items.HasItem(3599))
+            if (Player.ChampionName.ToLowerInvariant().Equals("kalista"))
             {
-                List<Obj_AI_Hero> lstAlies = ObjectHandler.Get<Obj_AI_Hero>().Allies;
-                bool lessRangeHero = false;
-                foreach (Obj_AI_Hero hero in lstAlies)
-                {
-                    if (!hero.IsDead
-                        && !hero.InFountain()
-                        && !hero.IsMe
-                        && hero.HealthPercentage() >= 25)
-                    {
-                        if (Player.AttackRange > hero.AttackRange)
-                        {
-                            lessRangeHero = true;
-                            break;
+                List<Obj_AI_Hero> lstAlies =
+                    ObjectHandler.Get<Obj_AI_Hero>()
+                    .Allies.OrderBy(r => r.AttackRange).ToList();
 
-                        }
-                    }
-                }
-
-                foreach (Obj_AI_Hero hero in lstAlies)
-                {
-                    if (!hero.IsDead
-                        && !hero.InFountain()
-                        && !hero.IsMe
-                        && hero.HealthPercentage() >= 25)
-                    {
-                        if (Player.AttackRange > hero.AttackRange)
-                        {
-                            Items.UseItem(3599, hero);
-                            break;
-                        }
-                    }
-                }
+                Player.Spellbook.CastSpell(SpellSlot.Item6, lstAlies[0]);
             }
         }
 
