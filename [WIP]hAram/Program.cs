@@ -237,9 +237,7 @@ namespace hAram
                 Following();
                 AutoLevel();
                 GetBuffs();
-
-                if (!Player.UnderTurret(true))
-                    CastSpells();
+                CastSpells();
             }
             else
                 RefreshLastShop();
@@ -565,6 +563,10 @@ namespace hAram
 
                 if (target != null && spell.IsReady())
                 {
+
+                    if (target.UnderTurret(true))
+                        return;
+
                     var pred = spell.GetPrediction(target);
                     if (pred.Hitchance >= HitChance.Medium)
                     {
@@ -601,6 +603,9 @@ namespace hAram
                     || (heroType == 1 && status == "Fight") 
                     || (Player.HealthPercentage() <= 30 && status == "Fight")))
                 {
+                    if (target.UnderTurret(true))
+                        return;
+
                     if (pred.Hitchance >= HitChance.Medium)
                     {
                         if (sDataInst.SData.IsToggleSpell)
@@ -620,6 +625,9 @@ namespace hAram
                 else if (target != null && spell.IsReady() 
                     && (heroType == 2 || heroType == 3 || heroType == 5))
                 {
+                    if (target.UnderTurret(true))
+                        return;
+
                     if (Player.HealthPercentage() <= 40)
                     {
                         if (sDataInst.SData.IsToggleSpell)
@@ -638,6 +646,9 @@ namespace hAram
                 }
                 else if (target != null && R.IsReady())
                 {
+                    if (target.UnderTurret(true))
+                        return;
+
                     if (sDataInst.SData.TargettingType == 0 && target.HealthPercentage() < 70)
                         spell.Cast();
                 }
@@ -649,7 +660,6 @@ namespace hAram
             Spell spell = null;
             if (qGapFlag && Q.IsReady() && qData.SData.TargettingType == 7)
                 spell = Q;
-
             if (wGapFlag && W.IsReady() && wData.SData.TargettingType == 7)
                 spell = W;
             if (eGapFlag && E.IsReady() && eData.SData.TargettingType == 7)
