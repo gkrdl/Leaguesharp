@@ -201,6 +201,8 @@ namespace hAram
             bool enabled = config.Item("Enabled").GetValue<bool>();
             if (!Player.IsDead && enabled)
             {
+                if (Player.UnderTurret(true))
+                    Game.PrintChat("UnderTurret");
                 if (Player.HealthPercentage() <= 20)
                     AntiGapclose();
 
@@ -218,28 +220,7 @@ namespace hAram
 
         private static void Orbwalking_AfterAttack(AttackableUnit unit, AttackableUnit target)
         {
-            if (unit.IsMe && target is Obj_AI_Hero)
-            {
-                status = "Fight";
-
-                float distance1 = 0;
-                if (Player.Distance(target) <= Player.AttackRange - 120)
-                {
-                    distance1 = Player.AttackRange - Player.Distance(target) - 10;
-                    if (Player.Team == GameObjectTeam.Chaos)
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z));
-                    else
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z));
-                }
-                else if (Player.Distance(target) >= Player.AttackRange - 50)
-                {
-                    distance1 = Player.AttackRange - Player.Distance(target) - 10;
-                    if (Player.Team == GameObjectTeam.Chaos)
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z));
-                    else
-                        Player.IssueOrder(GameObjectOrder.MoveTo, new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z));
-                }
-            }
+            
         }
         #endregion
 
@@ -250,14 +231,15 @@ namespace hAram
             target = null;
             Obj_AI_Minion minionTarget = null;
             AttackableUnit orbTarget = orb.GetTarget();
-
+            TargetSelector.Mode = TargetSelector.TargetingMode.Closest;
+            Obj_AI_Hero tsTarget = TargetSelector.GetTarget(Orbwalking.GetRealAutoAttackRange(Player), TargetSelector.DamageType.Physical); 
 
             if (orbTarget != null)
             {
                 if (orbTarget is Obj_AI_Hero)
                 {
                     status = "Fight";
-                    target = (Obj_AI_Hero)orbTarget;
+                    target = tsTarget;
                 }
                 else if (orbTarget is Obj_AI_Minion)
                 {
@@ -265,15 +247,10 @@ namespace hAram
                     minionTarget = (Obj_AI_Minion)orbTarget;
                 }
             }
-
-
            
             if (target != null && !Player.UnderTurret(true))
             {
-                status = "Fight";
-                orb.SetAttack(true);
-                orb.InAutoAttackRange(target);
-                Player.IssueOrder(GameObjectOrder.AttackUnit, target);
+                SetOrbWalk(target);
             }
             else if (minionTarget != null)
             {
@@ -281,7 +258,6 @@ namespace hAram
                 if (target.Health <= Player.GetAutoAttackDamage(Player, true))
                 {
                     orb.SetAttack(true);
-                    orb.InAutoAttackRange(target);
                     Player.IssueOrder(GameObjectOrder.AttackUnit, target);
                 }
             }
@@ -289,7 +265,6 @@ namespace hAram
             {
                 status = "Follow";
                 orb.SetAttack(true);
-                orb.InAutoAttackRange(orbTarget);
                 Player.IssueOrder(GameObjectOrder.AttackUnit, orbTarget);
             }
             else
@@ -304,10 +279,38 @@ namespace hAram
                 
                 if (turret.Distance(Player) <= Player.AttackRange)
                 {
-                    orb.InAutoAttackRange(turret);
                     orb.SetAttack(true);
                 }
                 
+            }
+        }
+
+
+        private static void SetOrbWalk(AttackableUnit target)
+        {
+            if (target is Obj_AI_Hero)
+            {
+                status = "Fight";
+
+                float distance1 = 0;
+                if (Player.Distance(target) <= Orbwalking.GetRealAutoAttackRange(Player) - 120)
+                {
+                    Game.PrintChat("Back");
+                    distance1 = (Orbwalking.GetRealAutoAttackRange(Player) - Player.Distance(target) - Player.Distance(target) / 2) / 2;
+                    if (Player.Team == GameObjectTeam.Chaos)
+                        Orbwalking.Orbwalk(target, new Vector3(Player.Position.X + distance1, Player.Position.Y + distance1, Player.Position.Z));
+                    else
+                        Orbwalking.Orbwalk(target, new Vector3(Player.Position.X - distance1, Player.Position.Y - distance1, Player.Position.Z));
+                }
+                else if (Player.Distance(target) >= Orbwalking.GetRealAutoAttackRange(Player))
+                {
+                    Game.PrintChat("Forward");
+                    distance1 = (Orbwalking.GetRealAutoAttackRange(Player) - Player.Distance(target) - Player.Distance(target) / 2) / 2;
+                    if (Player.Team == GameObjectTeam.Chaos)
+                        Orbwalking.Orbwalk(target, new Vector3(Player.Position.X - distance1, Player.Position.Y - distance1, Player.Position.Z));
+                    else
+                        Orbwalking.Orbwalk(target, new Vector3(Player.Position.X + distance1, Player.Position.Y + distance1, Player.Position.Z));
+                }
             }
         }
 
