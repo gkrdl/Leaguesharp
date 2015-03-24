@@ -36,7 +36,7 @@ namespace hAram.Champions
 
         public override void Orbwalking_AfterAttack(AttackableUnit unit, AttackableUnit target)
         {
-            if (unit is me && target.IsEnemy && target is Obj_AI_Hero)
+            if (unit.IsMe && target.IsEnemy && target is Obj_AI_Hero)
             {
                 W.Cast();
             }
