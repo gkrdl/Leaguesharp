@@ -33,5 +33,13 @@ namespace hAram.Champions
                 CastSpell(R, rData);
             }
         }
+
+        public override void Orbwalking_AfterAttack(AttackableUnit unit, AttackableUnit target)
+        {
+            if (target.IsEnemy)
+            {
+                W.Cast();
+            }
+        }
     }
 }

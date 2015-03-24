@@ -68,6 +68,7 @@ namespace hAram
             Obj_AI_Hero.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
             Obj_AI_Base.OnIssueOrder += Obj_AI_Base_OnIssueOrder;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+            Orbwalking.AfterAttack += Orbwalking_AfterAttack;
         }
 
         private static void InitMenu()
@@ -184,6 +185,7 @@ namespace hAram
 
         public virtual void Obj_AI_Base_OnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args) { }
 
+        public virtual void Orbwalking_AfterAttack(AttackableUnit unit, AttackableUnit target) { }
         #region 사용자함수
 
         public  void SetAttack()
