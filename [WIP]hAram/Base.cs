@@ -236,9 +236,10 @@ namespace hAram
                 status = "Fight";
 
                 float distance1 = 0;
+                var closetTarget = getObject.ClosetHero();
                 if (Player.Distance(attackTarget) <= Orbwalking.GetRealAutoAttackRange(Player) - 120)
                 {
-                    distance1 = (Orbwalking.GetRealAutoAttackRange(Player) - Player.Distance(attackTarget) - Player.Distance(attackTarget) / 2) / 2;
+                    distance1 = (Orbwalking.GetRealAutoAttackRange(Player) - Player.Distance(closetTarget) - Player.Distance(closetTarget) / 2) / 2;
                     if (Player.Team == GameObjectTeam.Chaos)
                         Orbwalking.Orbwalk(attackTarget, new Vector3(Player.Position.X + distance1, Player.Position.Y + distance1, Player.Position.Z));
                     else
@@ -246,7 +247,7 @@ namespace hAram
                 }
                 else if (Player.Distance(attackTarget) >= Orbwalking.GetRealAutoAttackRange(Player))
                 {
-                    distance1 = (Orbwalking.GetRealAutoAttackRange(Player) - Player.Distance(attackTarget) - Player.Distance(attackTarget) / 2) / 2;
+                    distance1 = (Orbwalking.GetRealAutoAttackRange(Player) - Player.Distance(closetTarget) - Player.Distance(closetTarget) / 2) / 2;
                     if (Player.Team == GameObjectTeam.Chaos)
                         Orbwalking.Orbwalk(attackTarget, new Vector3(Player.Position.X - distance1, Player.Position.Y - distance1, Player.Position.Z));
                     else
