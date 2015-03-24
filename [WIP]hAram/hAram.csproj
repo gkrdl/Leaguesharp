@@ -35,17 +35,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="clipper_library">
+      <HintPath>C:\LeagueSharp\\System\clipper_library.dll</HintPath>
+    </Reference>
     <Reference Include="LeagueSharp">
-      <HintPath>..\..\..\..\..\..\..\LeagueSharp\System\LeagueSharp.dll</HintPath>
+      <HintPath>C:\LeagueSharp\\System\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>..\..\..\..\..\..\..\LeagueSharp\System\LeagueSharp.Common.dll</HintPath>
+      <HintPath>C:\LeagueSharp\\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\..\..\..\..\LeagueSharp\System\SharpDX.dll</HintPath>
+      <HintPath>C:\LeagueSharp\\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\..\..\..\..\..\..\LeagueSharp\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\LeagueSharp\\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,8 +59,133 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base.cs" />
+    <Compile Include="Champions\elise.cs" />
+    <Compile Include="Champions\drmundo.cs" />
+    <Compile Include="Champions\gnar.cs" />
+    <Compile Include="Champions\nocturne.cs" />
+    <Compile Include="Champions\mordekaiser.cs" />
+    <Compile Include="Champions\missfortune.cs" />
+    <Compile Include="Champions\masteryi.cs" />
+    <Compile Include="Champions\maokai.cs" />
+    <Compile Include="Champions\malphite.cs" />
+    <Compile Include="Champions\lux.cs" />
+    <Compile Include="Champions\lulu.cs" />
+    <Compile Include="Champions\lucian.cs" />
+    <Compile Include="Champions\lissandra.cs" />
+    <Compile Include="Champions\leona.cs" />
+    <Compile Include="Champions\leesin.cs" />
+    <Compile Include="Champions\kogmaw.cs" />
+    <Compile Include="Champions\khazix.cs" />
+    <Compile Include="Champions\kennen.cs" />
+    <Compile Include="Champions\kayle.cs" />
+    <Compile Include="Champions\katarina.cs" />
+    <Compile Include="Champions\kassadin.cs" />
+    <Compile Include="Champions\karma.cs" />
+    <Compile Include="Champions\kalista.cs" />
+    <Compile Include="Champions\jinx.cs" />
+    <Compile Include="Champions\jayce.cs" />
+    <Compile Include="Champions\jax.cs" />
+    <Compile Include="Champions\jarvaniv.cs" />
+    <Compile Include="Champions\janna.cs" />
+    <Compile Include="Champions\hecarim.cs" />
+    <Compile Include="Champions\nidalee.cs" />
+    <Compile Include="Champions\nautilus.cs" />
+    <Compile Include="Champions\nasus.cs" />
+    <Compile Include="Champions\zyra.cs" />
+    <Compile Include="Champions\zilean.cs" />
+    <Compile Include="Champions\ziggs.cs" />
+    <Compile Include="Champions\zed.cs" />
+    <Compile Include="Champions\zac.cs" />
+    <Compile Include="Champions\yorick.cs" />
+    <Compile Include="Champions\yasuo.cs" />
+    <Compile Include="Champions\xinzhao.cs" />
+    <Compile Include="Champions\xerath.cs" />
+    <Compile Include="Champions\wukong.cs" />
+    <Compile Include="Champions\warwick.cs" />
+    <Compile Include="Champions\volibear.cs" />
+    <Compile Include="Champions\vladimir.cs" />
+    <Compile Include="Champions\viktor.cs" />
+    <Compile Include="Champions\vi.cs" />
+    <Compile Include="Champions\velkoz.cs" />
+    <Compile Include="Champions\veigar.cs" />
+    <Compile Include="Champions\vayne.cs" />
+    <Compile Include="Champions\varus.cs" />
+    <Compile Include="Champions\urgot.cs" />
+    <Compile Include="Champions\udyr.cs" />
+    <Compile Include="Champions\twitch.cs" />
+    <Compile Include="Champions\twistedfate.cs" />
+    <Compile Include="Champions\tryndamere.cs" />
+    <Compile Include="Champions\trundle.cs" />
+    <Compile Include="Champions\tristana.cs" />
+    <Compile Include="Champions\thresh.cs" />
+    <Compile Include="Champions\teemo.cs" />
+    <Compile Include="Champions\taric.cs" />
+    <Compile Include="Champions\talon.cs" />
+    <Compile Include="Champions\syndra.cs" />
+    <Compile Include="Champions\swain.cs" />
+    <Compile Include="Champions\soraka.cs" />
+    <Compile Include="Champions\sona.cs" />
+    <Compile Include="Champions\skarner.cs" />
+    <Compile Include="Champions\sivir.cs" />
+    <Compile Include="Champions\sion.cs" />
+    <Compile Include="Champions\singed.cs" />
+    <Compile Include="Champions\shyvana.cs" />
+    <Compile Include="Champions\shen.cs" />
+    <Compile Include="Champions\shaco.cs" />
+    <Compile Include="Champions\sejuani.cs" />
+    <Compile Include="Champions\ryze.cs" />
+    <Compile Include="Champions\rumble.cs" />
+    <Compile Include="Champions\riven.cs" />
+    <Compile Include="Champions\rengar.cs" />
+    <Compile Include="Champions\renekton.cs" />
+    <Compile Include="Champions\reksai.cs" />
+    <Compile Include="Champions\rammus.cs" />
+    <Compile Include="Champions\quinn.cs" />
+    <Compile Include="Champions\poppy.cs" />
+    <Compile Include="Champions\pantheon.cs" />
+    <Compile Include="Champions\orianna.cs" />
+    <Compile Include="Champions\olaf.cs" />
+    <Compile Include="Champions\nunu.cs" />
+    <Compile Include="Champions\nami.cs" />
+    <Compile Include="Champions\morgana.cs" />
+    <Compile Include="Champions\malzahar.cs" />
+    <Compile Include="Champions\leblanc.cs" />
+    <Compile Include="Champions\karthus.cs" />
+    <Compile Include="Champions\irelia.cs" />
+    <Compile Include="Champions\heimerdinger.cs" />
+    <Compile Include="Champions\graves.cs" />
+    <Compile Include="Champions\gragas.cs" />
+    <Compile Include="Champions\garen.cs" />
+    <Compile Include="Champions\gangplank.cs" />
+    <Compile Include="Champions\galio.cs" />
+    <Compile Include="Champions\fizz.cs" />
+    <Compile Include="Champions\fiora.cs" />
+    <Compile Include="Champions\fiddlesticks.cs" />
+    <Compile Include="Champions\ezreal.cs" />
+    <Compile Include="Champions\evelynn.cs" />
+    <Compile Include="Champions\draven.cs" />
+    <Compile Include="Champions\diana.cs" />
+    <Compile Include="Champions\darius.cs" />
+    <Compile Include="Champions\corki.cs" />
+    <Compile Include="Champions\chogath.cs" />
+    <Compile Include="Champions\cassiopeia.cs" />
+    <Compile Include="Champions\caitlyn.cs" />
+    <Compile Include="Champions\braum.cs" />
+    <Compile Include="Champions\brand.cs" />
+    <Compile Include="Champions\blitzcrank.cs" />
+    <Compile Include="Champions\ashe.cs" />
+    <Compile Include="Champions\annie.cs" />
+    <Compile Include="Champions\anivia.cs" />
+    <Compile Include="Champions\amumu.cs" />
+    <Compile Include="Champions\alistar.cs" />
+    <Compile Include="Champions\akali.cs" />
+    <Compile Include="Champions\ahri.cs" />
+    <Compile Include="Champions\aatrox.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Util\CardSelector.cs" />
+    <Compile Include="Util\GetObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
