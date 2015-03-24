@@ -544,7 +544,7 @@ namespace hAram
                     {
                         if (sDataInst.SData.IsToggleSpell)
                         {
-                            if (spell.Instance.ToggleState == 1 && sDataInst.SData.TargettingType == 6)
+                            if (spell.Instance.ToggleState == 1 && sDataInst.SData.TargettingType == SpellDataTargetType.Location)
                                 spell.Cast(pred.CastPosition);
                             else if (spell.Instance.ToggleState == 1)
                                 spell.Cast();
@@ -555,7 +555,7 @@ namespace hAram
                             {
                                 if (sDataInst.SData.TargettingType == 0)
                                     spell.Cast();
-                                else if (sDataInst.SData.TargettingType == 1)
+                                else if (sDataInst.SData.TargettingType == SpellDataTargetType.Unit)
                                     spell.CastOnUnit(target);
                                 else
                                     spell.Cast(pred.CastPosition);
@@ -588,7 +588,7 @@ namespace hAram
                         }
                         else
                         {
-                            if (sDataInst.SData.TargettingType == 1)
+                            if (sDataInst.SData.TargettingType == SpellDataTargetType.Unit)
                                 spell.CastOnUnit(target);
                             else
                                 spell.Cast(pred.CastPosition);
@@ -610,7 +610,7 @@ namespace hAram
                         }
                         else
                         {
-                            if (sDataInst.SData.TargettingType == 1)
+                            if (sDataInst.SData.TargettingType == SpellDataTargetType.Unit)
                                 spell.CastOnUnit(target);
                             else if (pred.Hitchance >= HitChance.VeryHigh)
                                 spell.Cast(pred.CastPosition);
@@ -631,13 +631,13 @@ namespace hAram
         private static void AntiGapclose()
         {
             Spell spell = null;
-            if (qGapFlag && Q.IsReady() && qData.SData.TargettingType == 7)
+            if (qGapFlag && Q.IsReady() && qData.SData.TargettingType == SpellDataTargetType.Location2)
                 spell = Q;
-            if (wGapFlag && W.IsReady() && wData.SData.TargettingType == 7)
+            if (wGapFlag && W.IsReady() && wData.SData.TargettingType == SpellDataTargetType.Location2)
                 spell = W;
-            if (eGapFlag && E.IsReady() && eData.SData.TargettingType == 7)
+            if (eGapFlag && E.IsReady() && eData.SData.TargettingType == SpellDataTargetType.Location2)
                 spell = E;
-            if (rGapFlag && R.IsReady() && rData.SData.TargettingType == 7)
+            if (rGapFlag && R.IsReady() && rData.SData.TargettingType == SpellDataTargetType.Location2)
                 spell = R;
 
             if (spell != null)
