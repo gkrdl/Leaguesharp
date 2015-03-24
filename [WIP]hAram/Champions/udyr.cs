@@ -22,20 +22,10 @@ namespace hAram.Champions
 
 
 
+            CastSpell(R, rData);
+            CastSpell(E, eData);
             CastSpell(Q, qData);
             CastSpell(W, wData);
-            CastSpell(E, eData);
-
-            target = GetTarget(R);
-
-            if (target != null && R.Instance.ToggleState == 1)
-            {
-                CastSpell(R, rData);
-            }
-            else if (target == null && R.Instance.ToggleState != 1)
-            {
-                CastSpell(R, rData);
-            }
         }
     }
 }
