@@ -198,7 +198,6 @@ namespace hAram
                     {
                         SetOrbWalk(orbTarget);
                     }
-                    status = "Fight";
                 }
                 else if (orbTarget is Obj_AI_Minion)
                 {
