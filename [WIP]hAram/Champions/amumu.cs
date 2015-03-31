@@ -21,10 +21,10 @@ namespace hAram.Champions
 
             CastSpell(Q, qData);
 
-            if (W.Instance.ToggleState == 1 && Player.CountEnemiesInRange(W.Range) > 0 )
-                CastSpell(W, wData);
+            if (W.Instance.ToggleState == 1 && Player.CountEnemiesInRange(W.Range) > 0)
+                W.Cast();
             else if (W.Instance.ToggleState != 1 && Player.CountEnemiesInRange(W.Range) == 0)
-                CastSpell(W, wData);
+                W.Cast();
 
             CastSpell(E, eData);
 

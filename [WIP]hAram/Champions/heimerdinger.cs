@@ -19,15 +19,18 @@ namespace hAram.Champions
         {
             base.Game_OnUpdate(args);
 
-            CastSpell(Q, qData);
             CastSpell(W, wData);
             CastSpell(E, eData);
             
             
 
             target = GetTarget(R);
+
             if (status == "Fight" || Player.HealthPercentage() <= 30)
+            {
                 CastSpell(R, rData);
+                Q.Cast(Player.Position);
+            }
         }
 
     }
