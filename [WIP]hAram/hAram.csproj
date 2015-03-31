@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base.cs" />
+    <Compile Include="Champions\bard.cs" />
     <Compile Include="Champions\elise.cs" />
     <Compile Include="Champions\drmundo.cs" />
     <Compile Include="Champions\gnar.cs" />
