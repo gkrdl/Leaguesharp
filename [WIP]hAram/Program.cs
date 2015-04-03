@@ -32,6 +32,7 @@ namespace hAram
         private static void Game_OnGameLoad(EventArgs args)
         {
 
+            #region Load Campions
             switch (Player.ChampionName.ToLowerInvariant())
             {
                 default:
@@ -395,7 +396,8 @@ namespace hAram
                     new zyra();
                     break;
             }
-           
+            #endregion
+
         }
         #endregion
         

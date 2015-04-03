@@ -75,7 +75,9 @@ namespace hAram
         {
             config = new Menu("hAram", "hAram", true);
             config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-            orb = new Orbwalking.Orbwalker(config);
+            config.AddItem(new MenuItem("Following", "Following").SetValue<bool>(true));
+            config.AddItem(new MenuItem("BuyItems", "BuyItems").SetValue<bool>(true));
+            orb = new Orbwalking.Orbwalker(config.SubMenu("Orbwalking"));
             config.AddToMainMenu();
         }
 
@@ -167,8 +169,13 @@ namespace hAram
             if (!Player.IsDead)
             {
                 SetAttack();
-                BuyItems();
-                Following();
+
+                if (config.Item("BuyItems").GetValue<bool>())
+                    BuyItems();
+
+                if (config.Item("Following").GetValue<bool>())
+                    Following();
+
                 AutoLevel();
                 GetBuffs();
 
