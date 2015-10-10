@@ -240,7 +240,7 @@ namespace hJayceV2FullVersion
                 {
                     blockCount++;
 
-                    if (blockCount == 10)
+                    if (blockCount == 6)
                     {
                         cancelMovt = false;
                         blockCount = 0;
