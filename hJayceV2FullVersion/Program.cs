@@ -129,7 +129,7 @@ namespace hJayceV2FullVersion
 
         private static void InitEvent()
         {
-            Game.OnGameUpdate += Game_OnGameUpdate;
+            Game.OnUpdate += Game_OnGameUpdate;
             Obj_AI_Hero.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
             Obj_AI_Base.OnIssueOrder += Obj_AI_Base_OnIssueOrder;
             Orbwalking.AfterAttack += Orbwalking_AfterAttack;
